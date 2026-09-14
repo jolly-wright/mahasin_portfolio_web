@@ -1,0 +1,534 @@
+/* ============================================================
+GLOBAL RESET
+============================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  }
+html,
+body {
+width: 100%;
+height: 100%;
+overflow: hidden;
+}
+body {
+background: #030207;
+color: white;
+font-family:
+    "Rajdhani",
+    "Courier New",
+    monospace;
+}
+/* ============================================================
+APPLICATION
+============================================================ */
+#app {
+position: relative;
+width: 100vw;
+height: 100vh;
+overflow: hidden;
+background: #030207;
+}
+/* ============================================================
+WORLD
+============================================================ */
+#topology-world {
+position: relative;
+overflow: hidden;
+width: 100%;
+height: 100%;
+}
+#space-background {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 1;
+    filter: saturate(1.35)
+        contrast(1.25)
+        brightness(0.85);
+    object-fit: cover;
+
+    z-index: 0;
+
+    pointer-events: none;
+}
+/* ============================================================
+SVG
+============================================================ */
+#topology {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+z-index: 1;
+}
+/* ============================================================
+FLOOR
+============================================================ */
+#floor {
+opacity: 0.35;
+}
+.stone-tile {
+fill: #111015;
+stroke: #19151c;
+stroke-width: 2;
+}
+.stone-crack {
+fill: none;
+stroke: #242027;
+stroke-width: 2;
+opacity: 0.65;
+}
+/* ============================================================
+PCB TRACES
+============================================================ */
+/*
+DARK TRACK
+*/
+.pcb-trace-base {
+fill: none;
+stroke: #18050b;
+stroke-width: 15;
+stroke-linecap: round;
+stroke-linejoin: round;
+}
+/*
+NORMAL RED TRACE
+*/
+.pcb-trace {
+fill: none;
+stroke: #a20e1e;
+stroke-width: 5;
+stroke-linecap: round;
+stroke-linejoin: round;
+filter: url("#red-glow");
+transition:
+    stroke 0.25s ease,
+    stroke-width 0.25s ease,
+    filter 0.25s ease;
+}
+/*
+HOVERED PATH
+Normal:
+red
+Hover:
+white + white glow
+*/
+.pcb-trace.hovered {
+stroke: #ffffff;
+stroke-width: 7;
+filter:
+    url("#white-glow");
+}
+/*
+Subtle red halo around the moving white energy.
+The red trace remains visible underneath it,
+creating the redstone / lightsaber appearance.
+*/
+/* ============================================================
+VIAS
+============================================================ */
+.pcb-via-outer {
+fill: #080509;
+stroke: #850c19;
+stroke-width: 5;
+filter: url("#red-glow");
+}
+.pcb-via-inner {
+fill: #ff2038;
+opacity: 0.9;
+}
+/* ============================================================
+OUTER HEXAGON
+============================================================ */
+#outer-hexagon {
+fill: none;
+stroke: #310812;
+stroke-width: 2;
+opacity: 0.65;
+}
+/* ============================================================
+OUTER MOVING BEAM
+============================================================ */
+#outer-beam {
+fill: none;
+stroke: white;
+stroke-width: 8;
+stroke-linecap: round;
+stroke-linejoin: round;
+stroke-dasharray:
+    130 5000;
+filter:
+    url("#white-glow");
+animation:
+    beam-clockwise 3.2s linear infinite;
+}
+@keyframes beam-clockwise {
+from {
+    stroke-dashoffset: 0;
+}
+to {
+    stroke-dashoffset: -2300;
+}
+}
+/* ============================================================
+HTML NODE OVERLAY
+============================================================ */
+#node-overlay {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 2;
+}
+/* ============================================================
+NODE CONTAINER
+============================================================ */
+.html-node {
+position: absolute;
+width: 210px;
+height: 210px;
+transform-origin:
+    center center;
+pointer-events: auto;
+cursor: pointer;
+}
+/* ============================================================
+NODE HEXAGON
+============================================================ */
+/*
+Exact pointy-top hexagon.
+This is the entire visual node.
+No rectangular image.
+No SVG image.
+No SVG clipPath.
+The node itself is a hexagon.
+*/
+.html-node-hex {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 156px;
+    height: 156px;
+
+    transform: translate(-50%, -50%);
+
+    clip-path:
+        polygon(
+            50% 0%,
+            93.3% 25%,
+            93.3% 75%,
+            50% 100%,
+            6.7% 75%,
+            6.7% 25%
+        );
+
+    -webkit-clip-path:
+        polygon(
+            50% 0%,
+            93.3% 25%,
+            93.3% 75%,
+            50% 100%,
+            6.7% 75%,
+            6.7% 25%
+        );
+
+    background:
+        linear-gradient(
+            145deg,
+            #250811 0%,
+            #10050a 48%,
+            #22060e 100%
+        );
+
+    border: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    overflow: hidden;
+
+    filter:
+        drop-shadow(
+            0 0 5px #6e0d1c
+        );
+
+    transition:
+        filter 0.25s ease,
+        transform 0.25s ease;
+}
+/*
+HEXAGON BORDER
+A second clipped layer creates the actual
+red illuminated perimeter.
+*/
+.html-node-hex::before {
+content: "";
+position: absolute;
+inset: 0;
+background:
+    linear-gradient(
+        135deg,
+        #c01730,
+        #5e0a17 45%,
+        #a91428
+    );
+clip-path:
+    polygon(
+        50% 0%,
+        93.3% 25%,
+        93.3% 75%,
+        50% 100%,
+        6.7% 75%,
+        6.7% 25%
+    );
+
+-webkit-clip-path:
+    polygon(
+        50% 0%,
+        93.3% 25%,
+        93.3% 75%,
+        50% 100%,
+        6.7% 75%,
+        6.7% 25%
+    );
+z-index: 0;
+}
+/*
+INNER DARK HEX
+This gives the node a real mechanical border
+rather than relying on CSS border + clip-path.
+*/
+.html-node-hex::after {
+content: "";
+position: absolute;
+left: 5px;
+right: 5px;
+top: 5px;
+bottom: 5px;
+background:
+    radial-gradient(
+        circle at center,
+        #4a3438 0%,
+        #302326 35%,
+        #171013 68%,
+        #080409 100%
+    );
+clip-path:
+    polygon(
+        50% 0%,
+        93.3% 25%,
+        93.3% 75%,
+        50% 100%,
+        6.7% 75%,
+        6.7% 25%
+    );
+
+-webkit-clip-path:
+    polygon(
+        50% 0%,
+        93.3% 25%,
+        93.3% 75%,
+        50% 100%,
+        6.7% 75%,
+        6.7% 25%
+    );
+z-index: 1;
+}
+/* ============================================================
+NODE LABEL
+============================================================ */
+.html-node-label {
+position: relative;
+z-index: 3;
+width: 115px;
+color: white;
+font-family:
+    "Orbitron",
+    "Rajdhani",
+    sans-serif;
+font-size: 12px;
+line-height: 1.45;
+font-weight: 700;
+letter-spacing: 2px;
+text-align: center;
+text-transform: uppercase;
+text-shadow:
+    0 0 5px #030207,
+    0 0 10px #030207,
+    0 0 14px rgba(255, 255, 255, 0.35);
+}
+/* ============================================================
+NODE LED
+============================================================ */
+.html-node-led {
+position: absolute;
+right: 24px;
+bottom: 27px;
+width: 8px;
+height: 8px;
+border-radius: 50%;
+background: #ff1935;
+box-shadow:
+    0 0 5px #ff1935,
+    0 0 12px #ff1935;
+z-index: 4;
+animation:
+    node-led-pulse 2s ease-in-out infinite;
+}
+@keyframes node-led-pulse {
+0%,
+100% {
+    opacity: 0.35;
+}
+50% {
+    opacity: 1;
+}
+}
+/* ============================================================
+NODE HOVER
+============================================================ */
+.html-node:hover .html-node-hex {
+filter:
+    drop-shadow(
+        0 0 8px #f02b43
+    );
+}
+.html-node:hover .html-node-label {
+color: #ff5265;
+text-shadow:
+    0 0 6px #ff1935,
+    0 0 12px #ff1935;
+}
+/* ============================================================
+ACTIVE NODE
+============================================================ */
+.html-node.active .html-node-hex {
+filter:
+    drop-shadow(
+        0 0 12px white
+    );
+}
+.html-node.active .html-node-label {
+color: white;
+text-shadow:
+    0 0 6px white,
+    0 0 14px #ff1935;
+}
+/* ============================================================
+CONTROL CORE
+============================================================ */
+.core-hex {
+fill:
+    rgba(35, 5, 14, 0.94);
+stroke:
+    #b5152a;
+stroke-width:
+    5;
+filter:
+    url("#red-glow");
+}
+.core-inner-hex {
+fill:
+    rgba(8, 4, 9, 0.9);
+stroke:
+    #5c0b17;
+stroke-width:
+    2;
+}
+.core-status {
+fill:
+    #ff3348;
+font-family:
+    "Orbitron",
+    sans-serif;
+font-size:
+    12px;
+letter-spacing:
+    5px;
+text-anchor:
+    middle;
+}
+.core-name {
+fill:
+    white;
+font-family:
+    "Orbitron",
+    sans-serif;
+font-size:
+    30px;
+font-weight:
+    bold;
+letter-spacing:
+    6px;
+text-anchor:
+    middle;
+filter:
+    url("#white-glow");
+}
+.core-divider {
+stroke:
+    #b91429;
+stroke-width:
+    2;
+filter:
+    url("#red-glow");
+}
+.core-description {
+fill:
+    #b04b5b;
+font-family:
+    "Rajdhani",
+    sans-serif;
+font-size:
+    12px;
+letter-spacing:
+    2px;
+text-anchor:
+    middle;
+}
+/* ============================================================
+CLICKABLE CORE
+============================================================ */
+.clickable-core {
+    cursor: pointer;
+}
+.clickable-core .core-hex,
+.clickable-core .core-inner-hex {
+    transition:
+        stroke 0.25s ease,
+        filter 0.25s ease;
+}
+.clickable-core:hover .core-hex {
+    stroke: #ffffff;
+    filter:
+        url("#white-glow");
+}
+.clickable-core:hover .core-inner-hex {
+    stroke: #ffffff;
+}
+.clickable-core.core-selected .core-hex {
+    stroke: #ffffff;
+    filter:
+        url("#white-glow");
+}
+/* ===========================================================
+MOBILE
+============================================================ */
+@media (max-width: 700px) {
+.html-node-label {
+    width: 105px;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+.core-name {
+    font-size: 24px;
+}
+}
