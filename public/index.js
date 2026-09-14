@@ -1,46 +1,46 @@
 /* ============================================================
 PORTFOLIO TOPOLOGY
 ============================================================ */
-const SVG_WIDTH = 1600;
-const SVG_HEIGHT = 1000;
+const SVG_WIDTH = 900;
+const SVG_HEIGHT = 900;
 const CENTER = {
-x: 800,
-y: 500
+x: 450,
+y: 450
 };
 /* ============================================================
 NODE POSITIONS
 ============================================================ */
 const nodes = {
-satellite: {
-    x: 800,
-    y: 110,
-    label: "VISION"
-},
-submarine: {
-    x: 800,
-    y: 890,
-    label: "ACADEMIC BACKGROUND"
-},
-boat: {
-    x: 1137.64,
-    y: 695,
-    label: "OUTREACH & COMMUNITY"
-},
-terrain: {
-    x: 462.36,
-    y: 695,
-    label: "TECH STACK"
-},
-uav: {
-    x: 462.36,
-    y: 305,
-    label: "PROJECTS & RESEARCHES"
-},
-aircraft: {
-    x: 1137.64,
-    y: 305,
-    label: "IMPACT"
-}
+    satellite: {
+        x: 450,
+        y: 90,
+        label: "VISION"
+    },
+    submarine: {
+        x: 450,
+        y: 810,
+        label: "ACADEMIC BACKGROUND"
+    },
+    boat: {
+        x: 760,
+        y: 630,
+        label: "OUTREACH & COMMUNITY"
+    },
+    terrain: {
+        x: 140,
+        y: 630,
+        label: "TECH STACK"
+    },
+    uav: {
+        x: 140,
+        y: 270,
+        label: "PROJECTS & RESEARCHES"
+    },
+    aircraft: {
+        x: 760,
+        y: 270,
+        label: "IMPACT"
+    }
 };
 /* ============================================================
 SVG REFERENCES
@@ -89,36 +89,6 @@ Object.entries(
     }
 );
 return element;
-}
-/* ============================================================
-FLOOR
-============================================================ */
-function createFloor() {
-const tileSize = 80;
-for (
-    let y = 0;
-    y < SVG_HEIGHT;
-    y += tileSize
-) {
-    for (
-        let x = 0;
-        x < SVG_WIDTH;
-        x += tileSize
-    ) {
-        const tile =
-            createSVGElement(
-                "rect",
-                {
-                    x,
-                    y,
-                    width: tileSize,
-                    height: tileSize,
-                    class: "stone-tile"
-                }
-            );
-        floor.appendChild(tile);
-    }
-}
 }
 /* ============================================================
 ORTHOGONAL PATH
@@ -289,76 +259,45 @@ nodeOverlay.appendChild(
 /* ============================================================
 NODE POSITION UPDATE
 ============================================================ */
-/* ============================================================
-NODE POSITION UPDATE
-============================================================ */
 function updateNodePositions() {
 const rect =
     svg.getBoundingClientRect();
-
-const scaleX =
-    rect.width /
-    SVG_WIDTH;
-
-const scaleY =
-    rect.height /
-    SVG_HEIGHT;
-
 const scale =
     Math.min(
-        scaleX,
-        scaleY
+        rect.width / SVG_WIDTH,
+        rect.height / SVG_HEIGHT
     );
-
 const renderedWidth =
-    SVG_WIDTH *
-    scale;
-
+    SVG_WIDTH * scale;
 const renderedHeight =
-    SVG_HEIGHT *
-    scale;
-
+    SVG_HEIGHT * scale;
 const offsetX =
-    (rect.width -
-    renderedWidth) / 2;
-
+    (rect.width - renderedWidth) / 2;
 const offsetY =
-    (rect.height -
-    renderedHeight) / 2;
-
+    (rect.height - renderedHeight) / 2;
 Object.entries(
     nodes
 ).forEach(
     ([nodeName, node]) => {
-
         const element =
             nodeOverlay.querySelector(
                 `[data-node="${nodeName}"]`
             );
-
         if (!element) {
             return;
         }
-
         const x =
             offsetX +
             node.x * scale;
-
         const y =
             offsetY +
             node.y * scale;
-
         element.style.left =
             `${x}px`;
-
         element.style.top =
             `${y}px`;
-
         element.style.transform =
-            `
-            translate(-50%, -50%)
-            scale(${scale})
-            `;
+            `translate(-50%, -50%) scale(${scale})`;
     }
 );
 }
@@ -442,12 +381,12 @@ const outer =
         "polygon",
         {
             points: `
-                800,380
-                904,440
-                904,560
-                800,620
-                696,560
-                696,440
+                450,330
+                554,390
+                554,510
+                450,570
+                346,510
+                346,390
             `,
             class: "core-hex"
         }
@@ -457,12 +396,12 @@ const inner =
         "polygon",
         {
             points: `
-                800,395
-                891,447
-                891,553
-                800,605
-                709,553
-                709,447
+                450,345
+                541,397
+                541,503
+                450,555
+                359,503
+                359,397
             `,
             class: "core-inner-hex"
         }
@@ -471,8 +410,8 @@ const status =
     createSVGElement(
         "text",
         {
-            x: 800,
-            y: 460,
+            x: 450,
+            y: 425,
             class: "core-status"
         }
     );
@@ -482,8 +421,8 @@ const name =
     createSVGElement(
         "text",
         {
-            x: 800,
-            y: 510,
+            x: 450,
+            y: 475,
             class: "core-name"
         }
     );
@@ -493,10 +432,10 @@ const divider =
     createSVGElement(
         "line",
         {
-            x1: 735,
-            y1: 530,
-            x2: 865,
-            y2: 530,
+            x1: 385,
+            y1: 445,
+            x2: 515,
+            y2: 445,
             class: "core-divider"
         }
     );
@@ -504,8 +443,8 @@ const description =
     createSVGElement(
         "text",
         {
-            x: 800,
-            y: 558,
+            x: 450,
+            y: 523,
             class: "core-description"
         }
     );
@@ -558,7 +497,6 @@ controlCore.appendChild(
 /* ============================================================
 BUILD
 ============================================================ */
-createFloor();
 Object.entries(
 nodes
 ).forEach(

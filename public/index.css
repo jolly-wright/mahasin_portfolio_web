@@ -59,9 +59,9 @@ height: 100%;
 object-fit: cover;
 opacity: 1;
 filter:
-saturate(1.4)
-contrast(1.15)
-brightness(1.2);
+saturate(1.2)
+contrast(1.1)
+brightness(1.0);
 z-index: 0;
 pointer-events: none;
 }
@@ -496,14 +496,6 @@ TABLET
 #hero-section {
 min-height: 520px;
 }
-.html-node {
-width: 190px;
-height: 190px;
-}
-.html-node-hex {
-width: 145px;
-height: 145px;
-}
 .html-node-label {
 width: 108px;
 font-size: 11px;
@@ -543,14 +535,6 @@ SMALL MOBILE
 @media (max-width: 480px) {
 #hero-section {
 min-height: 460px;
-}
-.html-node {
-width: 175px;
-height: 175px;
-}
-.html-node-hex {
-width: 135px;
-height: 135px;
 }
 .html-node-label {
 width: 96px;
