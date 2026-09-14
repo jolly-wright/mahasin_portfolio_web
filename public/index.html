@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
+name="viewport"
+content="width=device-width, initial-scale=1.0"
 >
-<title>Mahasin — Autonomous Systems</title>
+<title>Mahasin Portfolio</title>
 <!-- Robotic / technical typography -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,18 +21,25 @@
 </head>
 <body>
 <main id="app">
-<div id="topology-world">
-
+<section
+    id="hero-section"
+    class="portfolio-section"
+>
+    <div id="topology-world">
+    <!-- HERO BACKGROUND VIDEO -->
     <video
         id="space-background"
         autoplay
         muted
         loop
         playsinline
+        preload="metadata"
     >
-        <source src="assets/index_animation_bg.webm" type="video/webm">
+        <source
+            src="assets/nebula.webm"
+            type="video/webm"
+        >
     </video>
-
     <svg
         id="topology"
         viewBox="0 0 1600 1000"
@@ -40,6 +47,29 @@
         aria-label="Autonomous systems topology"
     >
         <defs>
+            <radialGradient
+                id="core-inner-gradient"
+                cx="50%"
+                cy="50%"
+                r="70%"
+            >
+                <stop
+                    offset="0%"
+                    stop-color="#4a3438"
+                />
+                <stop
+                    offset="35%"
+                    stop-color="#302326"
+                />
+                <stop
+                    offset="68%"
+                    stop-color="#171013"
+                />
+                <stop
+                    offset="100%"
+                    stop-color="#080409"
+                />
+            </radialGradient>
             <!-- RED GLOW -->
             <filter
                 id="red-glow"
@@ -115,13 +145,6 @@
                 />
             </radialGradient>
         </defs>
-        <!-- BACKGROUND -->
-        <!--<rect
-            width="1600"
-            height="1000"
-            fill="url(#background-glow)"
-            opacity="0.25"
-        />-->
         <!-- FLOOR -->
         <g id="floor"></g>
         <!-- REDSTONE -->
@@ -162,6 +185,7 @@
     <!-- HTML NODE LAYER -->
     <div id="node-overlay"></div>
 </div>
+</section>
 </main>
 <script src="index.js"></script>
 </body>

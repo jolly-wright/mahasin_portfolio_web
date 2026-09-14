@@ -1,35 +1,14 @@
 /* ============================================================
-MAHASIN PORTFOLIO — TOPOLOGY CONTROLLER
-SVG:
-- background
-- floor
-- redstone
-- PCB traces
-- vias
-- outer hex
-- moving beam
-- control core
-HTML:
-- six topology hexagons
-- node text
-- node LEDs
-============================================================ */
-/* ============================================================
-GLOBAL SVG COORDINATE SYSTEM
+PORTFOLIO TOPOLOGY
 ============================================================ */
 const SVG_WIDTH = 1600;
 const SVG_HEIGHT = 1000;
-/* ============================================================
-CONTROL CORE
-============================================================ */
 const CENTER = {
 x: 800,
 y: 500
 };
 /* ============================================================
-MASTER NODE POSITIONS
-These are the ONLY node positions.
-Six vertices = complete outer hexagon.
+NODE POSITIONS
 ============================================================ */
 const nodes = {
 satellite: {
@@ -66,158 +45,117 @@ aircraft: {
 /* ============================================================
 SVG REFERENCES
 ============================================================ */
-const svg =
-document.getElementById("topology");
-const traceLayer =
-document.getElementById("pcb-traces");
-const viaLayer =
-document.getElementById("vias");
-const coreLayer =
-document.getElementById("control-core");
-const floorLayer =
-document.getElementById("floor");
-const backgroundLayer =
-document.getElementById("redstone-background");
-const nodeOverlay =
-document.getElementById("node-overlay");
+const svg = document.getElementById(
+"topology"
+);
+const pcbTraces = document.getElementById(
+"pcb-traces"
+);
+const vias = document.getElementById(
+"vias"
+);
+const controlCore = document.getElementById(
+"control-core"
+);
+const floor = document.getElementById(
+"floor"
+);
+const redstoneBackground = document.getElementById(
+"redstone-background"
+);
+const nodeOverlay = document.getElementById(
+"node-overlay"
+);
 /* ============================================================
-SVG ELEMENT CREATOR
+HELPER
 ============================================================ */
 function createSVGElement(
-type,
+tag,
 attributes = {}
 ) {
 const element =
     document.createElementNS(
         "http://www.w3.org/2000/svg",
-        type
+        tag
     );
-for (
-    const [key, value]
-    of Object.entries(attributes)
-) {
-    element.setAttribute(
-        key,
-        value
-    );
-}
+Object.entries(
+    attributes
+).forEach(
+    ([key, value]) => {
+        element.setAttribute(
+            key,
+            value
+        );
+    }
+);
 return element;
 }
 /* ============================================================
 FLOOR
 ============================================================ */
 function createFloor() {
-const tileWidth = 160;
-const tileHeight = 80;
+const tileSize = 80;
 for (
-    let row = 0;
-    row < Math.ceil(
-        SVG_HEIGHT / tileHeight
-    );
-    row++
+    let y = 0;
+    y < SVG_HEIGHT;
+    y += tileSize
 ) {
     for (
-        let col = -1;
-        col <
-        Math.ceil(
-            SVG_WIDTH / tileWidth
-        ) + 1;
-        col++
+        let x = 0;
+        x < SVG_WIDTH;
+        x += tileSize
     ) {
-        const offset =
-            row % 2 === 0
-                ? 0
-                : tileWidth / 2;
-        const x =
-            col * tileWidth +
-            offset;
-        const y =
-            row * tileHeight;
         const tile =
             createSVGElement(
                 "rect",
                 {
                     x,
                     y,
-                    width: tileWidth,
-                    height: tileHeight,
+                    width: tileSize,
+                    height: tileSize,
                     class: "stone-tile"
                 }
             );
-        floorLayer.appendChild(
-            tile
-        );
-        const crack =
-            createSVGElement(
-                "path",
-                {
-                    d: `
-                        M ${x + 25} ${y + 20}
-                        L ${x + 45} ${y + 30}
-                        L ${x + 38} ${y + 48}
-                    `,
-                    class:
-                        "stone-crack"
-                }
-            );
-        floorLayer.appendChild(
-            crack
-        );
+        floor.appendChild(tile);
     }
 }
 }
 /* ============================================================
-ORTHOGONAL PCB ROUTE
+ORTHOGONAL PATH
 ============================================================ */
 function createOrthogonalPath(
 start,
 end
 ) {
-const dx =
-    end.x - start.x;
-const dy =
-    end.y - start.y;
-if (
-    Math.abs(dx) >
-    Math.abs(dy)
-) {
-    const midX =
-        start.x +
-        dx * 0.55;
-    return `
-        M ${start.x} ${start.y}
-        L ${midX} ${start.y}
-        L ${midX} ${end.y}
-        L ${end.x} ${end.y}
-    `;
-}
-const midY =
-    start.y +
-    dy * 0.55;
+const middleX =
+    start.x +
+    (end.x - start.x) * 0.5;
 return `
     M ${start.x} ${start.y}
-    L ${start.x} ${midY}
-    L ${end.x} ${midY}
+    L ${middleX} ${start.y}
+    L ${middleX} ${end.y}
     L ${end.x} ${end.y}
 `;
 }
 /* ============================================================
-ADD VIA
+VIA
 ============================================================ */
 function addVia(
 x,
-y,
-nodeName
+y
 ) {
+const group =
+    createSVGElement(
+        "g"
+    );
 const outer =
     createSVGElement(
         "circle",
         {
             cx: x,
             cy: y,
-            r: 9,
-            class: "pcb-via-outer",
-            "data-node": nodeName
+            r: 8,
+            class: "pcb-via-outer"
         }
     );
 const inner =
@@ -227,136 +165,76 @@ const inner =
             cx: x,
             cy: y,
             r: 3,
-            class: "pcb-via-inner",
-            "data-node": nodeName
+            class: "pcb-via-inner"
         }
     );
-viaLayer.appendChild(
+group.appendChild(
     outer
 );
-viaLayer.appendChild(
+group.appendChild(
     inner
+);
+vias.appendChild(
+    group
 );
 }
 /* ============================================================
-CREATE TRACE
+TRACE
 ============================================================ */
 function createTrace(
 nodeName,
-end
+node
 ) {
 const pathData =
     createOrthogonalPath(
         CENTER,
-        end
+        node
     );
-/* --------------------------------------------------------
-   DARK UNDERLAY
--------------------------------------------------------- */
 const base =
     createSVGElement(
         "path",
         {
             d: pathData,
-            class:
-                "pcb-trace-base",
-            "data-node":
-                nodeName
+            class: "pcb-trace-base"
         }
     );
-/* --------------------------------------------------------
-   RED TRACE
--------------------------------------------------------- */
 const trace =
     createSVGElement(
         "path",
         {
             d: pathData,
-            class:
-                "pcb-trace",
-            "data-node":
-                nodeName
+            class: "pcb-trace",
+            "data-node": nodeName
         }
     );
-traceLayer.appendChild(
+pcbTraces.appendChild(
     base
 );
-
-traceLayer.appendChild(
+pcbTraces.appendChild(
     trace
-);
-/* --------------------------------------------------------
-   VIA POSITION
--------------------------------------------------------- */
-const dx =
-    end.x - CENTER.x;
-const dy =
-    end.y - CENTER.y;
-if (
-    Math.abs(dx) >
-    Math.abs(dy)
-) {
-    const midX =
-        CENTER.x +
-        dx * 0.55;
-    addVia(
-        midX,
-        CENTER.y,
-        nodeName
-    );
-} else {
-    const midY =
-        CENTER.y +
-        dy * 0.55;
-    addVia(
-        CENTER.x,
-        midY,
-        nodeName
-    );
-}
-/* --------------------------------------------------------
-   ENDPOINT VIA
--------------------------------------------------------- */
-addVia(
-    end.x,
-    end.y,
-    nodeName
 );
 }
 /* ============================================================
-CREATE HTML HEX NODE
+NODE
 ============================================================ */
 function createNode(
 nodeName,
-data
+node
 ) {
-const node =
+const container =
     document.createElement(
         "div"
     );
-node.className =
+container.className =
     "html-node";
-node.dataset.node =
+container.dataset.node =
     nodeName;
-node.dataset.x =
-    data.x;
-node.dataset.y =
-    data.y;
-/* --------------------------------------------------------
-   HEXAGON
--------------------------------------------------------- */
 const hex =
     document.createElement(
         "div"
     );
 hex.className =
     "html-node-hex";
-node.appendChild(
-    hex
-);
-/* --------------------------------------------------------
-   TEXT
--------------------------------------------------------- */
 const label =
     document.createElement(
         "div"
@@ -364,13 +242,7 @@ const label =
 label.className =
     "html-node-label";
 label.textContent =
-    data.label;
-hex.appendChild(
-    label
-);
-/* --------------------------------------------------------
-   STATUS LED
--------------------------------------------------------- */
+    node.label;
 const led =
     document.createElement(
         "div"
@@ -378,12 +250,15 @@ const led =
 led.className =
     "html-node-led";
 hex.appendChild(
+    label
+);
+container.appendChild(
+    hex
+);
+container.appendChild(
     led
 );
-/* --------------------------------------------------------
-   HOVER
--------------------------------------------------------- */
-node.addEventListener(
+container.addEventListener(
     "mouseenter",
     () => {
         highlightTrace(
@@ -391,352 +266,292 @@ node.addEventListener(
         );
     }
 );
-node.addEventListener(
+container.addEventListener(
     "mouseleave",
     () => {
-        clearTraceHighlight();
+        clearTraceHighlight(
+            nodeName
+        );
     }
 );
-/* --------------------------------------------------------
-   CLICK
--------------------------------------------------------- */
-node.addEventListener(
+container.addEventListener(
     "click",
     () => {
         activateNode(
-            nodeName,
-            node
+            nodeName
         );
     }
 );
 nodeOverlay.appendChild(
-    node
+    container
 );
 }
 /* ============================================================
-POSITION HTML NODES OVER SVG
+NODE POSITION UPDATE
+============================================================ */
+/* ============================================================
+NODE POSITION UPDATE
 ============================================================ */
 function updateNodePositions() {
-const svgRect =
+const rect =
     svg.getBoundingClientRect();
+
 const scaleX =
-    svgRect.width /
+    rect.width /
     SVG_WIDTH;
+
 const scaleY =
-    svgRect.height /
+    rect.height /
     SVG_HEIGHT;
+
 const scale =
     Math.min(
         scaleX,
         scaleY
     );
+
 const renderedWidth =
-    SVG_WIDTH * scale;
+    SVG_WIDTH *
+    scale;
+
 const renderedHeight =
-    SVG_HEIGHT * scale;
+    SVG_HEIGHT *
+    scale;
+
 const offsetX =
-    (svgRect.width -
+    (rect.width -
     renderedWidth) / 2;
+
 const offsetY =
-    (svgRect.height -
+    (rect.height -
     renderedHeight) / 2;
-const worldRect =
-    nodeOverlay.getBoundingClientRect();
-document
-    .querySelectorAll(
-        ".html-node"
-    )
-    .forEach(
-        node => {
-            const x =
-                Number(
-                    node.dataset.x
-                );
-            const y =
-                Number(
-                    node.dataset.y
-                );
-            const screenX =
-                offsetX +
-                x * scale;
-            const screenY =
-                offsetY +
-                y * scale;
-            node.style.left =
-                `${screenX}px`;
-            node.style.top =
-                `${screenY}px`;
-            node.style.transform =
-                `
-                translate(-50%, -50%)
-                scale(${scale})
-                `;
+
+Object.entries(
+    nodes
+).forEach(
+    ([nodeName, node]) => {
+
+        const element =
+            nodeOverlay.querySelector(
+                `[data-node="${nodeName}"]`
+            );
+
+        if (!element) {
+            return;
         }
-    );
+
+        const x =
+            offsetX +
+            node.x * scale;
+
+        const y =
+            offsetY +
+            node.y * scale;
+
+        element.style.left =
+            `${x}px`;
+
+        element.style.top =
+            `${y}px`;
+
+        element.style.transform =
+            `
+            translate(-50%, -50%)
+            scale(${scale})
+            `;
+    }
+);
 }
 /* ============================================================
 TRACE HIGHLIGHT
 ============================================================ */
 function highlightTrace(
-    nodeName
+nodeName
 ) {
-
-    document
-        .querySelectorAll(
-            ".pcb-trace"
-        )
-        .forEach(
-            element => {
-
-                element.classList.remove(
-                    "hovered"
-                );
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            `.pcb-trace[data-node="${nodeName}"]`
-        )
-        .forEach(
-            element => {
-
-                element.classList.add(
-                    "hovered"
-                );
-
-            }
-        );
-
+const trace =
+    pcbTraces.querySelector(
+        `.pcb-trace[data-node="${nodeName}"]`
+    );
+if (!trace) {
+    return;
 }
-/*Clear trace highlight*/
-function clearTraceHighlight() {
-
-    document
-        .querySelectorAll(
-            ".pcb-trace"
-        )
-        .forEach(
-            element => {
-
-                element.classList.remove(
-                    "hovered"
-                );
-
-            }
-        );
-
+trace.classList.add(
+    "hovered"
+);
 }
 /* ============================================================
-NODE ACTIVATION
+CLEAR TRACE HIGHLIGHT
+============================================================ */
+function clearTraceHighlight(
+nodeName
+) {
+const trace =
+    pcbTraces.querySelector(
+        `.pcb-trace[data-node="${nodeName}"]`
+    );
+if (!trace) {
+    return;
+}
+trace.classList.remove(
+    "hovered"
+);
+}
+/* ============================================================
+ACTIVATE NODE
 ============================================================ */
 function activateNode(
-nodeName,
-nodeElement
+nodeName
 ) {
 document
     .querySelectorAll(
         ".html-node"
     )
     .forEach(
-        node => {
-            node.classList.remove(
+        element => {
+            element.classList.remove(
                 "active"
             );
         }
     );
-nodeElement.classList.add(
-    "active"
-);
-console.log(
-    `Selected topology node: ${nodeName}`
-);
-}
-/* ============================================================
-ACTIVATE CONTROL CORE
-============================================================ */
-function activateCore() {
-
-    document
-        .querySelectorAll(
-            ".html-node"
-        )
-        .forEach(
-            node => {
-
-                node.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            ".clickable-core"
-        )
-        .forEach(
-            core => {
-
-                core.classList.add(
-                    "core-selected"
-                );
-
-            }
-        );
-
-
-    console.log(
-        "Selected topology core: MAHASIN"
+const node =
+    nodeOverlay.querySelector(
+        `[data-node="${nodeName}"]`
     );
-
+if (node) {
+    node.classList.add(
+        "active"
+    );
+}
+controlCore.classList.remove(
+    "core-selected"
+);
 }
 /* ============================================================
-CREATE CONTROL CORE
+CORE
 ============================================================ */
 function createCore() {
 const group =
     createSVGElement(
         "g",
         {
-            transform:
-                `translate(${CENTER.x} ${CENTER.y})`,
-            class:
-                "core-group"
+            class: "clickable-core"
         }
     );
-/* OUTER HEX */
 const outer =
     createSVGElement(
         "polygon",
         {
             points: `
-                0,-112
-                97,-56
-                97,56
-                0,112
-                -97,56
-                -97,-56
+                800,380
+                904,440
+                904,560
+                800,620
+                696,560
+                696,440
             `,
-            class:
-                "core-hex"
+            class: "core-hex"
         }
     );
-group.appendChild(
-    outer
-);
-/* INNER HEX */
 const inner =
     createSVGElement(
         "polygon",
         {
             points: `
-                0,-94
-                81.4,-47
-                81.4,47
-                0,94
-                -81.4,47
-                -81.4,-47
+                800,395
+                891,447
+                891,553
+                800,605
+                709,553
+                709,447
             `,
-            class:
-                "core-inner-hex"
+            class: "core-inner-hex"
         }
     );
-group.appendChild(
-    inner
-);
-/* STATUS */
 const status =
     createSVGElement(
         "text",
         {
-            x: 0,
-            y: -42,
+            x: 800,
+            y: 460,
             class: "core-status"
         }
     );
 status.textContent =
     "ABOUT";
-group.appendChild(
-    status
-);
-/* NAME */
 const name =
     createSVGElement(
         "text",
         {
-            x: 0,
-            y: 10,
+            x: 800,
+            y: 510,
             class: "core-name"
         }
     );
 name.textContent =
     "Mahasin";
-group.appendChild(
-    name
-);
-/* DIVIDER */
 const divider =
     createSVGElement(
         "line",
         {
-            x1: -35,
-            y1: 28,
-            x2: 35,
-            y2: 28,
+            x1: 735,
+            y1: 530,
+            x2: 865,
+            y2: 530,
             class: "core-divider"
         }
     );
-group.appendChild(
-    divider
-);
-/* DESCRIPTION */
 const description =
     createSVGElement(
         "text",
         {
-            x: 0,
-            y: 55,
+            x: 800,
+            y: 558,
             class: "core-description"
         }
     );
 description.textContent =
     "Portfolio";
 group.appendChild(
+    outer
+);
+group.appendChild(
+    inner
+);
+group.appendChild(
+    status
+);
+group.appendChild(
+    name
+);
+group.appendChild(
+    divider
+);
+group.appendChild(
     description
 );
-group.classList.add("clickable-core");
-
 group.addEventListener(
     "mouseenter",
     () => {
-
-        group.classList.add("core-hover");
-
+        group.classList.add(
+            "core-hover"
+        );
     }
 );
-
 group.addEventListener(
     "mouseleave",
     () => {
-
-        group.classList.remove("core-hover");
-
+        group.classList.remove(
+            "core-hover"
+        );
     }
 );
-
 group.addEventListener(
     "click",
     () => {
-
-        activateCore();
-
+        window.location.href = "about.html";
     }
 );
-coreLayer.appendChild(
+controlCore.appendChild(
     group
 );
 }
@@ -759,19 +574,16 @@ nodes
 }
 );
 createCore();
-/* ============================================================
-INITIAL POSITION
-============================================================ */
 updateNodePositions();
 /* ============================================================
-RESPONSIVE POSITIONING
+RESIZE
 ============================================================ */
 window.addEventListener(
 "resize",
 updateNodePositions
 );
 if (
-typeof ResizeObserver !== "undefined"
+"ResizeObserver" in window
 ) {
 const observer =
     new ResizeObserver(
