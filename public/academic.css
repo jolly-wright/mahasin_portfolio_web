@@ -1,0 +1,852 @@
+/* ============================================================
+   RESET
+============================================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background: #02090c;
+}
+
+body {
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    color: #dcece8;
+
+    background: #02090c;
+}
+
+
+/* ============================================================
+   PAGE
+============================================================ */
+
+#academic-page {
+    position: relative;
+
+    min-height: 2200px;
+
+    padding-bottom: 120px;
+
+    overflow: hidden;
+}
+
+
+/* ============================================================
+   ACTUAL BACKGROUND IMAGE
+============================================================ */
+
+#ocean-background {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+#ocean-background img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center;
+}
+
+
+/* ============================================================
+   SHADOW / VIGNETTE
+============================================================ */
+
+#ocean-vignette {
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 1;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0, 5, 8, 0.62),
+            rgba(0, 5, 8, 0.24) 25%,
+            rgba(0, 5, 8, 0.18) 55%,
+            rgba(0, 5, 8, 0.48) 80%,
+            rgba(0, 5, 8, 0.72)
+        );
+}
+
+
+/* ============================================================
+   BUBBLE CONTAINER
+============================================================ */
+
+#bubble-container {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 1;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   INDIVIDUAL BUBBLES
+============================================================ */
+
+.bubble {
+    position: absolute;
+
+    bottom: -40px;
+
+    border:
+        1px solid
+        rgba(190, 235, 240, 0.38);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(235, 255, 255, 0.18),
+            rgba(150, 220, 225, 0.035) 55%,
+            rgba(100, 190, 200, 0.015)
+        );
+
+    box-shadow:
+        inset 1px 1px 2px
+        rgba(235, 255, 255, 0.15);
+
+    animation:
+        bubble-rise
+        var(--bubble-duration)
+        linear
+        var(--bubble-delay)
+        infinite;
+
+    will-change:
+        transform,
+        opacity;
+}
+
+
+/* ============================================================
+   BUBBLE MOTION
+============================================================ */
+
+@keyframes bubble-rise {
+
+    0% {
+        transform:
+            translate3d(
+                0,
+                0,
+                0
+            )
+            scale(0.75);
+
+        opacity: 0;
+    }
+
+
+    8% {
+        opacity: var(--bubble-opacity);
+    }
+
+
+    25% {
+        transform:
+            translate3d(
+                var(--drift-a),
+                -25vh,
+                0
+            )
+            scale(0.88);
+    }
+
+
+    50% {
+        transform:
+            translate3d(
+                var(--drift-b),
+                -55vh,
+                0
+            )
+            scale(1);
+    }
+
+
+    75% {
+        transform:
+            translate3d(
+                var(--drift-c),
+                -85vh,
+                0
+            )
+            scale(1.08);
+    }
+
+
+    94% {
+        opacity: var(--bubble-opacity);
+    }
+
+
+    100% {
+        transform:
+            translate3d(
+                var(--drift-d),
+                -125vh,
+                0
+            )
+            scale(1.16);
+
+        opacity: 0;
+    }
+}
+
+
+/* ============================================================
+   CONTENT LAYER
+============================================================ */
+
+#page-header,
+#kelp-world,
+#return-button {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* ============================================================
+   HEADER
+============================================================ */
+
+#page-header {
+    width: min(700px, 88vw);
+
+    margin: 0 auto;
+
+    padding-top: 90px;
+
+    text-align: center;
+}
+
+.eyebrow {
+    margin-bottom: 16px;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.3em;
+
+    color: #9bd2c7;
+}
+
+#page-header h1 {
+    font-size: clamp(
+        42px,
+        6vw,
+        68px
+    );
+
+    line-height: 1;
+
+    font-weight: 500;
+
+    color: #e6f3ef;
+}
+
+#page-header p {
+    margin-top: 20px;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+
+    color: #b8d0cb;
+}
+
+
+/* ============================================================
+   KELP WORLD
+============================================================ */
+
+#kelp-world {
+    position: relative;
+
+    width: min(1000px, 100vw);
+
+    height: 1800px;
+
+    margin: 0 auto;
+}
+
+
+/* ============================================================
+   KELP SVG
+============================================================ */
+
+#kelp {
+    position: absolute;
+
+    top: 0;
+    left: 50%;
+
+    width: 700px;
+    height: 1800px;
+
+    transform: translateX(-50%);
+
+    overflow: visible;
+
+    pointer-events: none;
+}
+
+
+/* ============================================================
+   MAIN STEM
+============================================================ */
+
+.kelp-stem {
+    fill: none;
+
+    stroke: #4d796d;
+
+    stroke-width: 25;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+}
+
+
+/* ============================================================
+   LEAVES
+============================================================ */
+
+.kelp-leaf {
+    fill: #527e70;
+
+    opacity: 0.95;
+}
+
+
+/* ============================================================
+   TIMELINE EVENTS
+============================================================ */
+
+.academic-event {
+    position: absolute;
+
+    width: 390px;
+
+    padding: 22px 26px;
+
+    background:
+        rgba(2, 16, 19, 0.68);
+
+    border:
+        1px solid
+        rgba(145, 194, 183, 0.35);
+
+    border-radius: 4px;
+
+    backdrop-filter: blur(2px);
+
+    transition:
+        transform 260ms ease,
+        border-color 260ms ease,
+        background 260ms ease,
+        box-shadow 260ms ease;
+
+    will-change: transform;
+}
+
+
+/* ============================================================
+   CARD HOVER / FLOAT
+============================================================ */
+
+.academic-event:hover {
+    transform:
+        translateY(-8px);
+
+    border-color:
+        rgba(175, 220, 210, 0.58);
+
+    background:
+        rgba(3, 20, 23, 0.76);
+
+    box-shadow:
+        0 14px 35px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+/* ============================================================
+   EVENT POSITIONS
+============================================================ */
+
+#year-2017 {
+    top: 1190px;
+
+    left: calc(50% + 70px);
+}
+
+
+#year-june-2025 {
+    top: 900px;
+
+    right: calc(50% + 70px);
+}
+
+
+#year-september-2025 {
+    top: 610px;
+
+    left: calc(50% + 70px);
+}
+
+
+#year-2027 {
+    top: 240px;
+
+    right: calc(50% + 70px);
+}
+
+
+/* ============================================================
+   EVENT CONTENT
+============================================================ */
+
+.event-year {
+    position: absolute;
+
+    top: 21px;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #d4e2a9;
+
+    white-space: nowrap;
+}
+
+
+#year-2017 .event-year,
+#year-september-2025 .event-year {
+    left: -78px;
+}
+
+
+#year-june-2025 .event-year,
+#year-2027 .event-year {
+    right: -78px;
+}
+
+
+.event-line {
+    position: absolute;
+
+    top: 31px;
+
+    width: 55px;
+
+    height: 1px;
+
+    background:
+        rgba(151, 197, 186, 0.55);
+}
+
+
+#year-2017 .event-line,
+#year-september-2025 .event-line {
+    left: -55px;
+}
+
+
+#year-june-2025 .event-line,
+#year-2027 .event-line {
+    right: -55px;
+}
+
+
+/* ============================================================
+   EVENT TYPE
+============================================================ */
+
+.event-type {
+    margin-bottom: 9px;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.16em;
+
+    color: #8ec9bc;
+}
+
+
+/* ============================================================
+   EVENT TITLE
+============================================================ */
+
+.academic-event h2 {
+    font-size: 23px;
+
+    line-height: 1.2;
+
+    font-weight: 600;
+
+    color: #e3efeb;
+}
+
+
+/* ============================================================
+   EVENT DESCRIPTION
+============================================================ */
+
+.academic-event p {
+    margin-top: 13px;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    color: #b3cbc6;
+}
+
+
+/* ============================================================
+   CURRENT STATUS
+============================================================ */
+
+.status {
+    display: inline-block;
+
+    margin-top: 17px;
+
+    padding: 6px 10px;
+
+    border:
+        1px solid
+        rgba(150, 195, 177, 0.38);
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 9px;
+
+    letter-spacing: 0.17em;
+
+    color: #c6d99b;
+}
+
+
+/* ============================================================
+   CENTRAL CAPTION
+============================================================ */
+
+#kelp-caption {
+    position: absolute;
+
+    left: 50%;
+
+    top: 1570px;
+
+    transform:
+        translateX(-50%);
+
+    width: 250px;
+
+    text-align: center;
+}
+
+#kelp-caption span {
+    display: block;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 16px;
+
+    letter-spacing: 0.18em;
+
+    color: #58c6ca;
+}
+
+#kelp-caption strong {
+    display: block;
+
+    margin-top: 10px;
+
+    font-size: 20px;
+
+    font-weight: 500;
+
+    color: #d9e9df;
+}
+
+
+/* ============================================================
+   RETURN
+============================================================ */
+
+#return-button {
+    display: block;
+
+    width: max-content;
+
+    margin: 0 auto;
+
+    padding: 11px 18px;
+
+    background:
+        rgba(2, 15, 18, 0.72);
+
+    border:
+        1px solid
+        rgba(140, 190, 181, 0.35);
+
+    color: #a8d2c8;
+
+    text-decoration: none;
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 10px;
+
+    letter-spacing: 0.14em;
+}
+
+#return-button:hover {
+    border-color:
+        rgba(175, 215, 205, 0.65);
+
+    color: #e1f0eb;
+}
+
+
+/* ============================================================
+   TABLET / MOBILE
+============================================================ */
+
+@media (max-width: 800px) {
+
+    #academic-page {
+        min-height: 2500px;
+    }
+
+
+    #kelp-world {
+        height: 2100px;
+    }
+
+
+    #kelp {
+        width: 500px;
+
+        height: 1800px;
+    }
+
+
+    .academic-event {
+        width: min(
+            330px,
+            72vw
+        );
+    }
+
+
+    #year-2017,
+    #year-june-2025,
+    #year-september-2025,
+    #year-2027 {
+        left: 50%;
+        right: auto;
+
+        transform:
+            translateX(-50%);
+    }
+
+
+    #year-2017 {
+        top: 1320px;
+    }
+
+
+    #year-june-2025 {
+        top: 1020px;
+    }
+
+
+    #year-september-2025 {
+        top: 700px;
+    }
+
+
+    #year-2027 {
+        top: 260px;
+    }
+
+
+    /*
+       Mobile hover must preserve
+       the centering transform.
+    */
+
+    #year-2017:hover,
+    #year-june-2025:hover,
+    #year-september-2025:hover,
+    #year-2027:hover {
+        transform:
+            translateX(-50%)
+            translateY(-8px);
+    }
+
+
+    #year-2017 .event-year,
+    #year-june-2025 .event-year,
+    #year-september-2025 .event-year,
+    #year-2027 .event-year {
+        left: 50%;
+
+        right: auto;
+
+        top: -34px;
+
+        transform:
+            translateX(-50%);
+
+        font-size: 12px;
+    }
+
+
+    #year-2017 .event-line,
+    #year-june-2025 .event-line,
+    #year-september-2025 .event-line,
+    #year-2027 .event-line {
+        display: none;
+    }
+
+
+    #kelp-caption {
+        top: 1730px;
+    }
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+============================================================ */
+
+@media (max-width: 520px) {
+
+    #page-header {
+        padding-top: 65px;
+    }
+
+
+    #page-header h1 {
+        font-size: 40px;
+    }
+
+
+    #page-header p {
+        font-size: 14px;
+    }
+
+
+    #kelp {
+        width: 420px;
+    }
+
+
+    .academic-event {
+        width: 82vw;
+
+        padding: 20px;
+    }
+
+
+    .academic-event h2 {
+        font-size: 20px;
+    }
+
+
+    #year-2017 {
+        top: 1320px;
+    }
+
+
+    #year-june-2025 {
+        top: 1030px;
+    }
+
+
+    #year-september-2025 {
+        top: 700px;
+    }
+
+
+    #year-2027 {
+        top: 250px;
+    }
+
+}

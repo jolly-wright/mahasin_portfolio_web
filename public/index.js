@@ -42,6 +42,14 @@ const nodes = {
         label: "IMPACT"
     }
 };
+const nodePages = {
+    satellite: "vision.html",
+    submarine: "academic.html",
+    boat: "outreach.html",
+    terrain: "tech-stack.html",
+    uav: "projects.html",
+    aircraft: "impact.html"
+};
 /* ============================================================
 SVG REFERENCES
 ============================================================ */
@@ -247,9 +255,13 @@ container.addEventListener(
 container.addEventListener(
     "click",
     () => {
-        activateNode(
-            nodeName
-        );
+        const page =
+            nodePages[nodeName];
+
+        if (page) {
+            window.location.href =
+                page;
+        }
     }
 );
 nodeOverlay.appendChild(
