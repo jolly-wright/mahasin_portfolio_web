@@ -1,191 +1,581 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
-<title>Md. Mahasin Al Muhi | Portfolio</title>
-<!-- Robotic / technical typography -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link
-    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap"
-    rel="stylesheet"
->
-<link
-    rel="stylesheet"
-    href="index.css"
->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Md. Mahasin Al Muhi | Portfolio</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Devicon Vector Icons for Tech Logos -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=IM+Fell+English:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Style Sheet -->
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-<main id="app">
-<section
-    id="hero-section"
-    class="portfolio-section"
->
-    <div id="topology-world">
-    <!-- HERO BACKGROUND VIDEO -->
-    <video
-        id="space-background"
-        autoplay
-        muted
-        loop
-        playsinline
-        preload="metadata"
-    >
-        <source
-            src="assets/nebula.webm"
-            type="video/webm"
-        >
-    </video>
-    <svg
-        id="topology"
-        viewBox="0 0 900 900"
-        preserveAspectRatio="xMidYMid meet"
-        aria-label="Autonomous systems topology"
-    >
-        <defs>
-            <radialGradient
-                id="core-inner-gradient"
-                cx="50%"
-                cy="50%"
-                r="70%"
-            >
-                <stop
-                    offset="0%"
-                    stop-color="#4a3438"
-                />
-                <stop
-                    offset="35%"
-                    stop-color="#302326"
-                />
-                <stop
-                    offset="68%"
-                    stop-color="#171013"
-                />
-                <stop
-                    offset="100%"
-                    stop-color="#080409"
-                />
-            </radialGradient>
-            <!-- RED GLOW -->
-            <filter
-                id="red-glow"
-                x="-100%"
-                y="-100%"
-                width="300%"
-                height="300%"
-            >
-                <feGaussianBlur
-                    stdDeviation="5"
-                    result="blur"
-                />
-                <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-            <!-- STRONG RED GLOW -->
-            <filter
-                id="strong-red-glow"
-                x="-100%"
-                y="-100%"
-                width="300%"
-                height="300%"
-            >
-                <feGaussianBlur
-                    stdDeviation="10"
-                    result="blur"
-                />
-                <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-            <!-- WHITE GLOW -->
-            <filter
-                id="white-glow"
-                x="-100%"
-                y="-100%"
-                width="300%"
-                height="300%"
-            >
-                <feGaussianBlur
-                    stdDeviation="7"
-                    result="blur"
-                />
-                <feMerge>
-                    <feMergeNode in="blur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-            </filter>
-            <!-- BACKGROUND GLOW -->
-            <radialGradient
-                id="background-glow"
-                cx="50%"
-                cy="50%"
-                r="65%"
-            >
-                <stop
-                    offset="0%"
-                    stop-color="#5d0a17"
-                    stop-opacity="0.40"
-                />
-                <stop
-                    offset="50%"
-                    stop-color="#260611"
-                    stop-opacity="0.22"
-                />
-                <stop
-                    offset="100%"
-                    stop-color="#030207"
-                    stop-opacity="0"
-                />
-            </radialGradient>
-        </defs>
-        <!-- FLOOR -->
-        <g id="floor"></g>
-        <!-- REDSTONE -->
-        <g id="redstone-background"></g>
-        <!-- PCB TRACES -->
-        <g id="pcb-traces"></g>
-        <!-- VIAS -->
-        <g id="vias"></g>
-        <!-- OUTER HEXAGON -->
-        <path
-            id="outer-hexagon"
-            d="
-                M 450 90
-                L 760 270
-                L 760 630
-                L 450 810
-                L 140 630
-                L 140 270
-                Z
-            "
-        />
-        <path
-            id="outer-beam"
-            d="
-                M 450 90
-                L 760 270
-                L 760 630
-                L 450 810
-                L 140 630
-                L 140 270
-                Z
-            "
-        />
-        <!-- CONTROL CORE -->
-        <g id="control-core"></g>
-    </svg>
-    <!-- HTML NODE LAYER -->
-    <div id="node-overlay"></div>
-</div>
-</section>
-</main>
-<script src="index.js"></script>
+
+    <!-- Dynamic Canvas Background -->
+    <canvas id="space-canvas"></canvas>
+
+    <!-- Header Navigation -->
+    <header id="main-header">
+        <a href="#about" class="logo">
+            <i class="fa-solid fa-satellite-dish"></i>
+            <span>MAHASIN</span>
+        </a>
+
+        <nav class="desktop-nav">
+            <a href="#about" class="nav-link active" data-nav="about">About</a>
+            <a href="#impact-1" class="nav-link" data-nav="impact">Impact & Achievements</a>
+            <a href="#projects" class="nav-link" data-nav="projects">Projects</a>
+            <a href="#tech-stack" class="nav-link" data-nav="tech-stack">TechBook</a>
+            <a href="#academics" class="nav-link" data-nav="academics">Academics</a>
+            <a href="#contact" class="nav-link" data-nav="contact">Contact</a>
+        </nav>
+
+        <button id="menu-toggle" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="mobile-nav">
+        <a href="#about" class="mobile-link" data-nav="about">About</a>
+        <a href="#impact-1" class="mobile-link" data-nav="impact">Impact</a>
+        <a href="#projects" class="mobile-link" data-nav="projects">Projects</a>
+        <a href="#tech-stack" class="mobile-link" data-nav="tech-stack">TechBook</a>
+        <a href="#academics" class="mobile-link" data-nav="academics">Academics</a>
+        <a href="#contact" class="mobile-link" data-nav="contact">Contact</a>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+
+        <!-- 1. Hero / About Section -->
+        <section id="about" class="hero-section" data-section="about">
+            <div class="hero-full-layout">
+                <div class="hero-col hero-intro">
+                    <span class="badge"><i class="fa-solid fa-microchip"></i> Control Systems & Aerospace Enthusiast</span>
+                    <h1 class="hero-name">Md. Mahasin <span class="highlight">Al Muhi</span></h1>
+                    <div class="intro-paragraph">
+                        <p>
+                            Driven by an insatiable curiosity for how complex systems operate, I engineer solutions at the intersection of <strong>Physics, Electricity, and Control Logic</strong>. My work focuses on designing, coding, and physically constructing autonomous systems including UAVs, planetary rovers, and satellite control frameworks.
+                        </p>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="#impact-1" class="btn btn-primary">Explore Impacts <i class="fa-solid fa-arrow-right"></i></a>
+                        <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                    </div>
+                </div>
+
+                <div class="hero-col hero-earth-spacer"></div>
+
+                <div class="hero-col hero-profile">
+                    <div class="profile-wrapper">
+                        <div class="profile-image-container">
+                            <img src="your-photo.jpg" alt="Md. Mahasin Al Muhi" class="profile-img">
+                        </div>
+                        <div class="profile-details">
+                            <h3>Md. Mahasin Al Muhi</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a href="#impact-1" class="scroll-indicator" aria-label="Scroll Down">
+                <i class="fa-solid fa-chevron-down"></i>
+            </a>
+        </section>
+
+        <!-- 2. Full-Screen Native Web Impacts -->
+        
+        <!-- Impact 1 -->
+        <section id="impact-1" class="fullscreen-impact-page" data-section="impact">
+            <div class="impact-content-wrapper">
+                <div class="impact-section-header">
+                    <span class="achievement-category"><i class="fa-solid fa-bullseye"></i> Track Record</span>
+                    <h2 class="section-title-large">Impact & Key Achievements</h2>
+                </div>
+
+                <div class="impact-header-zone">
+                    <span class="achievement-category"><i class="fa-solid fa-award"></i> Leadership & Representation</span>
+                    <h2 class="impact-headline">47th National Science Week Festival (District Round)</h2>
+                    <p class="institution-tag"><i class="fa-solid fa-building-columns"></i> Notre Dame College, Dhaka</p>
+                </div>
+
+                <div class="impact-body-zone">
+                    <div class="impact-description">
+                        <p>
+                            Contributed to organize the Dhaka District Round of the prestigious 47th National Science Week Festival at Notre Dame College, Dhaka. Representing the institution, I delivered the official keynote address before <strong>Md. Anwar Hossain, Secretary of the Ministry of Science and Technology of Bangladesh.</strong>
+                        </p>
+                        <p>
+                            The address highlighted youth participation in technological innovation, system engineering, and national scientific advancement.
+                        </p>
+                    </div>
+                    <div class="impact-visual-grid">
+                        <div class="full-media-frame">
+                            <img src="assets/national_science_week_speech.jpg" alt="Delivering Keynote Speech" class="media-img">
+                        </div>
+                        <div class="full-media-frame">
+                            <img src="assets/prize_secretary_of_science_tech_ministry.jpg" alt="Presenting Honor" class="media-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact 2 -->
+        <section id="impact-2" class="fullscreen-impact-page" data-section="impact">
+            <div class="impact-content-wrapper">
+                <div class="impact-header-zone">
+                    <span class="achievement-category"><i class="fa-solid fa-wheat-awn-circle-exclamation"></i> Innovation & National Recognition</span>
+                    <h2 class="impact-headline">PM Recognition at 'Startup, Science Project & Idea Showcasing 2026'</h2>
+                </div>
+
+                <div class="impact-body-zone">
+                    <div class="impact-description">
+                        <p>
+                            Led the technical architecture and development of <strong>Agricure</strong>, an advanced agricultural intervention ecosystem combining cooperative aerial (UAV) and ground-rover units.
+                        </p>
+                        <p>
+                            The system optimizes crop yield by analyzing soil states and identifying plant diseases early via a custom CNN model. The project garnered high praise from <strong>Prime Minister Tarique Rahman</strong> during our presentation in the National Round.
+                        </p>
+                        <a href="#projects" class="btn btn-primary btn-sm mt-2">Explore System Specifications <i class="fa-solid fa-arrow-down"></i></a>
+                    </div>
+                    <div class="impact-visual-grid">
+                        <div class="full-media-frame">
+                            <img src="assets/agricure-prime_minister.jpg" alt="PM Briefing" class="media-img">
+                        </div>
+                        <div class="full-media-frame">
+                            <img src="assets/national_round_project_idea_showcase.jpg" alt="PM Review" class="media-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact 3 -->
+        <section id="impact-3" class="fullscreen-impact-page" data-section="impact">
+            <div class="impact-content-wrapper">
+                <div class="impact-header-zone">
+                    <span class="achievement-category"><i class="fa-solid fa-sitemap"></i> Organizational Equity</span>
+                    <h2 class="impact-headline">Notre Dame Annual Science Festival 2025 & 35th GKC</h2>
+                </div>
+
+                <div class="impact-body-zone">
+                    <div class="impact-description">
+                        <p>
+                            Contributed to organize the nationwide <em>Notre Dame Annual Science Festival 2025 & 35th GKC</em>, mobilizing 18 project teams from Notre Dame College and guiding over 65 science project initiatives from across Bangladesh.
+                        </p>
+                        <p>
+                            To democratize access to STEM, my co-lead and I engineered a sustainable web platform for the Notre Dame Science Club. By removing registration fees and building scalable infrastructure, we established a perpetual, zero-cost portal ensuring future students can compete nationally.
+                        </p>
+                    </div>
+                    <div class="impact-visual-grid triple-grid">
+                        <div class="full-media-frame">
+                            <img src="fest-general.jpg" alt="Festival Overview" class="media-img">
+                        </div>
+                        <div class="full-media-frame">
+                            <img src="guided-project-1.jpg" alt="Mentored Team A" class="media-img">
+                        </div>
+                        <div class="full-media-frame">
+                            <img src="guided-project-2.jpg" alt="Mentored Team B" class="media-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact 4 -->
+        <section id="impact-4" class="fullscreen-impact-page" data-section="impact">
+            <div class="impact-content-wrapper">
+                <div class="impact-header-zone">
+                    <span class="achievement-category"><i class="fa-solid fa-rocket"></i> Venture & Technical Mentorship</span>
+                    <h2 class="impact-headline">Co-Founder — Team Nokkhotropoth</h2>
+                </div>
+
+                <div class="impact-body-zone">
+                    <div class="impact-description">
+                        <p>
+                            Co-founded <strong>Team Nokkhotropoth</strong>, an R&D collective dedicated to producing autonomous systems while educating the next wave of engineers. Mentoring 15 students in UAV design, aerodynamic fundamentals, and flight control integration.
+                        </p>
+                        <p>
+                            Developed a <strong>Dead-Reckoning Localization framework for UAVs in GPS-denied environments</strong>, securing <strong>5th Place at the 47th National Science Week</strong>.
+                        </p>
+                        <a href="https://nokkhotropoth.pages.dev" target="_blank" rel="noopener noreferrer" class="btn btn-secondary mt-2">
+                            Visit Official Platform <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </div>
+                    <div class="impact-visual-grid single-grid">
+                        <div class="full-media-frame">
+                            <img src="assets/5th_prize_secretary_of_science_tech_ministry.jpeg" alt="GPS-Denied UAV" class="media-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Projects Section -->
+        <section id="projects" class="vertical-projects-section" data-section="projects">
+
+            <!-- Seamless Section Transition Cloud Divider -->
+            <div class="cloud-transition-bridge">
+                <div class="cloud-puff puff-0"></div>
+                <div class="cloud-puff puff-1"></div>
+                <div class="cloud-puff puff-2"></div>
+                <div class="cloud-puff puff-3"></div>
+                <div class="cloud-puff puff-4"></div>
+                <div class="cloud-puff puff-5"></div>
+                <div class="cloud-puff puff-6"></div>
+                <div class="cloud-puff puff-7"></div>
+                <div class="cloud-puff puff-8"></div>
+                <div class="cloud-puff puff-9"></div>
+                <div class="cloud-puff puff-10"></div>
+            </div>
+
+            <div class="vertical-projects-container">
+                <div class="section-intro">
+                    <span class="achievement-category"><i class="fa-solid fa-compass-drafting"></i> Starchart Systems</span>
+                    <h2 class="section-headline">Engineered Systems & Projects</h2>
+                    <p class="section-subtext">A single-screen view of core technical architectures.</p>
+                </div>
+
+                <div class="vertical-projects-list">
+                    
+                    <!-- Vertical Project Row 1 -->
+                    <div class="vertical-project-row">
+                        <div class="project-number">01</div>
+                        <div class="project-info">
+                            <div class="project-title-bar">
+                                <h3>Agricure Autonomous Ecosystem</h3>
+                                <a href="https://nokkhotropoth.pages.dev" target="_blank" aria-label="Visit Project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            </div>
+                            <p class="project-summary">
+                                Autonomous dual-unit aerial drone and ground rover platform designed for targeted crop illness diagnosis, soil parameter testing, and precise agricultural yield optimization through onboard CNN inference models.
+                            </p>
+                            <div class="tech-tags">
+                                <span class="tag">UAV Robotics</span>
+                                <span class="tag">Autonomous Control Flow</span>
+                                <span class="tag">Soil Telemetry</span>
+                                <span class="tag">Embedded CNN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Project Row 2 -->
+                    <div class="vertical-project-row">
+                        <div class="project-number">02</div>
+                        <div class="project-info">
+                            <div class="project-title-bar">
+                                <h3>GPS-Denied UAV Localization Framework</h3>
+                                <a href="https://nokkhotropoth.pages.dev" target="_blank" aria-label="Visit Project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            </div>
+                            <p class="project-summary">
+                                Dead-reckoning sensor fusion system capable of real-time flight coordinate estimation and stability management during total satellite navigation signal denial.
+                            </p>
+                            <div class="tech-tags">
+                                <span class="tag">Sensor Fusion</span>
+                                <span class="tag">Dead Reckoning</span>
+                                <span class="tag">Flight Controller</span>
+                                <span class="tag">Real-Time State Estimation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Project Row 3 -->
+                    <div class="vertical-project-row">
+                        <div class="project-number">03</div>
+                        <div class="project-info">
+                            <div class="project-title-bar">
+                                <h3>NDSC Perpetual Web Platform</h3>
+                                <a href="https://ndscbd.net" target="_blank" aria-label="Visit Project"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                            </div>
+                            <p class="project-summary">
+                                Architected a permanent, zero-cost online portal for nationwide STEM participation, engineered to endure as a legacy system of Notre Dame Science Club for future student developers.
+                            </p>
+                            <div class="tech-tags">
+                                <span class="tag">Web Architecture</span>
+                                <span class="tag">Zero-Cost Scaling</span>
+                                <span class="tag">STEM Infrastructure</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Vintage Open Grimoire Tech Stack (Authentic Parchment Book Spread) -->
+        <section id="tech-stack" class="vintage-section" data-section="tech-stack">
+            
+            <!-- Cloud Transition Bridge from Starchart to Grimoire -->
+            <div class="cloud-transition-bridge">
+                <div class="cloud-puff puff-0"></div>
+                <div class="cloud-puff puff-1"></div>
+                <div class="cloud-puff puff-2"></div>
+                <div class="cloud-puff puff-3"></div>
+                <div class="cloud-puff puff-4"></div>
+                <div class="cloud-puff puff-5"></div>
+                <div class="cloud-puff puff-6"></div>
+                <div class="cloud-puff puff-7"></div>
+                <div class="cloud-puff puff-8"></div>
+                <div class="cloud-puff puff-9"></div>
+                <div class="cloud-puff puff-10"></div>
+            </div>
+
+            <div class="vintage-container">
+                <div class="grimoire-book-wrapper">
+                    
+                    <!-- Leather Book Cover Backdrop with Stacked Paper Margins -->
+                    <div class="real-book-spine-cover"></div>
+                    
+                    <div class="grimoire-real-book">
+                        
+                        <!-- Left Page -->
+                        <div class="grimoire-page page-left">
+                            <div class="page-header">
+                                <p class="hp-motto-quote">"The line between fiction and reality is bridged by the desire to learn it."</p>
+                            </div>
+
+                            <div class="page-heading">
+                                <h2><i class="fa-solid fa-feather-pointed"></i> Languages & Web</h2>
+                            </div>
+
+                            <!-- Left Page Grid (8 Large Tool Icons) -->
+                            <div class="tech-logo-grid">
+                                <div class="tech-logo-item">
+                                    <i class="devicon-python-plain colored"></i>
+                                    <span>Python</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-cplusplus-plain colored"></i>
+                                    <span>C++</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-c-plain colored"></i>
+                                    <span>C Language</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-java-plain colored"></i>
+                                    <span>Java</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-html5-plain colored"></i>
+                                    <span>HTML5</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-css3-plain colored"></i>
+                                    <span>CSS3</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-javascript-plain colored"></i>
+                                    <span>JavaScript</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <img src="https://cdn.simpleicons.org/cloudflare/f38020" alt="Cloudflare" class="svg-tech-icon">
+                                    <span>Cloudflare</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Realistic Middle Spine Fold & Binding -->
+                        <div class="grimoire-center-binding">
+                            <div class="binding-stitch"></div>
+                            <div class="binding-stitch"></div>
+                            <div class="binding-stitch"></div>
+                        </div>
+
+                        <!-- Right Page -->
+                        <div class="grimoire-page page-right">
+                            <div class="page-header right-header">
+                                <span class="hp-page-number">Page 9 ¾</span>
+                            </div>
+
+                            <div class="page-heading">
+                                <h2><i class="fa-solid fa-scroll"></i> IDEs, AI & Hardware</h2>
+                            </div>
+
+                            <!-- Right Page Grid (7 Large Tool Icons) -->
+                            <div class="tech-logo-grid">
+                                <div class="tech-logo-item">
+                                    <i class="devicon-vscode-plain colored"></i>
+                                    <span>VS Code</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-intellij-plain colored"></i>
+                                    <span>IntelliJ IDEA</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="devicon-arduino-plain colored"></i>
+                                    <span>Arduino IDE</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <img src="https://cdn.simpleicons.org/platformio/1e88e5" alt="PlatformIO" class="svg-tech-icon">
+                                    <span>PlatformIO</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="fa-solid fa-brain ink-icon"></i>
+                                    <span>Llama AI</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <img src="https://cdn.simpleicons.org/easyeda/2b1810" alt="EasyEDA" class="svg-tech-icon">
+                                    <span>EasyEDA</span>
+                                </div>
+                                <div class="tech-logo-item">
+                                    <i class="fa-solid fa-terminal ink-icon"></i>
+                                    <span>Thonny IDE</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Academic Background (Official Vintage Certificate Theme) -->
+        <section id="academics" class="vintage-section hp-academic-theme" data-section="academics">
+            <div class="vintage-container max-w-narrow">
+                <div class="hogwarts-certificate">
+                    
+                    <!-- Decorative Certificate Ornate Border -->
+                    <div class="cert-border-inner">
+                        <div class="cert-corner corner-tl">✦</div>
+                        <div class="cert-corner corner-tr">✦</div>
+                        <div class="cert-corner corner-bl">✦</div>
+                        <div class="cert-corner corner-br">✦</div>
+
+                        <div class="wax-seal">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        
+                        <p class="cert-institution">The Journey thus far</p>
+                        <span class="cert-subtitle">Parchment of Academic Distinction</span>
+                        
+                        <h2 class="cert-title">Archive Record</h2>
+
+                        <!-- Entry 1: NDC HSC -->
+                        <div class="academic-entry">
+                            <div class="academic-header">
+                                <h3>Notre Dame College, Dhaka (NDC '27 Batch)</h3>
+                                <span class="academic-year">2025 — 2027</span>
+                            </div>
+                            <p class="academic-degree">Higher Secondary Certificate (HSC) — Science Stream (Ongoing)</p>
+                            <p class="academic-desc">
+                                Specializing in Advanced Physics, Higher Mathematics, and Electrical Systems. Engaged in scientific research and technical project leadership.
+                            </p>
+                        </div>
+
+                        <div class="hp-divider">✦ ✤ ✦</div>
+
+                        <!-- Entry 2: NDSC -->
+                        <div class="academic-entry">
+                            <div class="academic-header">
+                                <h3>Notre Dame Science Club (NDSC)</h3>
+                                <span class="academic-year">Late 2025 — Present</span>
+                            </div>
+                            <p class="academic-degree">Organizer & Former Volunteer</p>
+                            <p class="academic-desc">
+                                Joined in late 2025 as a volunteer, contributing to national science events. Currently serving as an active organizer directing STEM festivals and web platform infrastructure.
+                            </p>
+                        </div>
+
+                        <div class="hp-divider">✦ ✤ ✦</div>
+
+                        <!-- Entry 3: SJS SSC -->
+                        <div class="academic-entry">
+                            <div class="academic-header">
+                                <h3>St. Joseph Higher Secondary School (SJS '25 Batch)</h3>
+                                <span class="academic-year">Graduated Mid 2025</span>
+                            </div>
+                            <p class="academic-degree">Secondary School Certificate (SSC) — Science Stream</p>
+                            <p class="academic-desc">
+                                Passed with highest honors — <strong>GPA 5.00/5.00 with A+ in all Science Subjects</strong>. Built strong foundations in physics, chemistry, and mathematics.
+                            </p>
+                        </div>
+
+                        <div class="hp-divider">✦ ✤ ✦</div>
+
+                        <!-- Entry 4: JCF -->
+                        <div class="academic-entry">
+                            <div class="academic-header">
+                                <h3>Josephite Cultural Forum (JCF)</h3>
+                                <span class="academic-year">2024</span>
+                            </div>
+                            <p class="academic-degree">Joint Secretary</p>
+                            <p class="academic-desc">
+                                Served in student leadership, coordinating major school events, cultural showcases, and organizational operations.
+                            </p>
+                        </div>
+
+                        <div class="hp-divider">✦ ✤ ✦</div>
+
+                        <!-- Entry 5: SJS Admission -->
+                        <div class="academic-entry">
+                            <div class="academic-header">
+                                <h3>St. Joseph Higher Secondary School</h3>
+                                <span class="academic-year">2017</span>
+                            </div>
+                            <p class="academic-degree">Admitted & Enrolled</p>
+                            <p class="academic-desc">
+                                Commenced secondary academic journey at St. Joseph, initiating early pursuits in science, logic, and creative forums.
+                            </p>
+                        </div>
+
+                        <div class="cert-signature-block">
+                            <div class="sig-line">
+                                <span>Bound by the Laws of Nature, Driven by the Poems of Innovation.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Contact Section -->
+        <section id="contact" class="vintage-section contact-vintage" data-section="contact">
+            <div class="vintage-container max-w-narrow">
+                <h2 class="section-title center hp-title">Send An Owl / Transmit Message</h2>
+                <div class="vintage-form-container">
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" required placeholder="Enter your full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Dispatch Address (Email)</label>
+                            <input type="email" id="email" required placeholder="name@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" rows="5" required placeholder="Discuss a project, collaboration, or STEM initiative..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary full-width vintage-btn">Dispatch Signal <i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 Md. Mahasin Al Muhi. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://nokkhotropoth.pages.dev" target="_blank" aria-label="Nokkhotropoth"><i class="fa-solid fa-globe"></i></a>
+                <a href="#about" aria-label="Top"><i class="fa-solid fa-arrow-up"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Main Script -->
+    <script src="index.js"></script>
 </body>
 </html>

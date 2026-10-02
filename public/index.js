@@ -1,547 +1,281 @@
-/* ============================================================
-PORTFOLIO TOPOLOGY
-============================================================ */
-const SVG_WIDTH = 900;
-const SVG_HEIGHT = 900;
-const CENTER = {
-x: 450,
-y: 450
-};
-/* ============================================================
-NODE POSITIONS
-============================================================ */
-const nodes = {
-    satellite: {
-        x: 450,
-        y: 90,
-        label: "VISION"
-    },
-    submarine: {
-        x: 450,
-        y: 810,
-        label: "ACADEMIC BACKGROUND"
-    },
-    boat: {
-        x: 760,
-        y: 630,
-        label: "OUTREACH & COMMUNITY"
-    },
-    terrain: {
-        x: 140,
-        y: 630,
-        label: "TECH STACK"
-    },
-    uav: {
-        x: 140,
-        y: 270,
-        label: "PROJECTS & RESEARCHES"
-    },
-    aircraft: {
-        x: 760,
-        y: 270,
-        label: "IMPACT"
-    }
-};
-const nodePages = {
-    satellite: "vision.html",
-    submarine: "academic.html",
-    boat: "outreach.html",
-    terrain: "tech-stack.html",
-    uav: "projects.html",
-    aircraft: "impact.html"
-};
-/* ============================================================
-SVG REFERENCES
-============================================================ */
-const svg = document.getElementById(
-"topology"
-);
-const pcbTraces = document.getElementById(
-"pcb-traces"
-);
-const vias = document.getElementById(
-"vias"
-);
-const controlCore = document.getElementById(
-"control-core"
-);
-const floor = document.getElementById(
-"floor"
-);
-const redstoneBackground = document.getElementById(
-"redstone-background"
-);
-const nodeOverlay = document.getElementById(
-"node-overlay"
-);
-/* ============================================================
-HELPER
-============================================================ */
-function createSVGElement(
-tag,
-attributes = {}
-) {
-const element =
-    document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        tag
-    );
-Object.entries(
-    attributes
-).forEach(
-    ([key, value]) => {
-        element.setAttribute(
-            key,
-            value
-        );
-    }
-);
-return element;
-}
-/* ============================================================
-ORTHOGONAL PATH
-============================================================ */
-function createOrthogonalPath(
-start,
-end
-) {
-const middleX =
-    start.x +
-    (end.x - start.x) * 0.5;
-return `
-    M ${start.x} ${start.y}
-    L ${middleX} ${start.y}
-    L ${middleX} ${end.y}
-    L ${end.x} ${end.y}
-`;
-}
-/* ============================================================
-VIA
-============================================================ */
-function addVia(
-x,
-y
-) {
-const group =
-    createSVGElement(
-        "g"
-    );
-const outer =
-    createSVGElement(
-        "circle",
-        {
-            cx: x,
-            cy: y,
-            r: 8,
-            class: "pcb-via-outer"
-        }
-    );
-const inner =
-    createSVGElement(
-        "circle",
-        {
-            cx: x,
-            cy: y,
-            r: 3,
-            class: "pcb-via-inner"
-        }
-    );
-group.appendChild(
-    outer
-);
-group.appendChild(
-    inner
-);
-vias.appendChild(
-    group
-);
-}
-/* ============================================================
-TRACE
-============================================================ */
-function createTrace(
-nodeName,
-node
-) {
-const pathData =
-    createOrthogonalPath(
-        CENTER,
-        node
-    );
-const base =
-    createSVGElement(
-        "path",
-        {
-            d: pathData,
-            class: "pcb-trace-base"
-        }
-    );
-const trace =
-    createSVGElement(
-        "path",
-        {
-            d: pathData,
-            class: "pcb-trace",
-            "data-node": nodeName
-        }
-    );
-pcbTraces.appendChild(
-    base
-);
-pcbTraces.appendChild(
-    trace
-);
-}
-/* ============================================================
-NODE
-============================================================ */
-function createNode(
-nodeName,
-node
-) {
-const container =
-    document.createElement(
-        "div"
-    );
-container.className =
-    "html-node";
-container.dataset.node =
-    nodeName;
-const hex =
-    document.createElement(
-        "div"
-    );
-hex.className =
-    "html-node-hex";
-const label =
-    document.createElement(
-        "div"
-    );
-label.className =
-    "html-node-label";
-label.textContent =
-    node.label;
-const led =
-    document.createElement(
-        "div"
-    );
-led.className =
-    "html-node-led";
-hex.appendChild(
-    label
-);
-container.appendChild(
-    hex
-);
-container.appendChild(
-    led
-);
-container.addEventListener(
-    "mouseenter",
-    () => {
-        highlightTrace(
-            nodeName
-        );
-    }
-);
-container.addEventListener(
-    "mouseleave",
-    () => {
-        clearTraceHighlight(
-            nodeName
-        );
-    }
-);
-container.addEventListener(
-    "click",
-    () => {
-        const page =
-            nodePages[nodeName];
+document.addEventListener('DOMContentLoaded', () => {
 
-        if (page) {
-            window.location.href =
-                page;
+    // --- Dynamic Header Scroll Spy ---
+    const sections = document.querySelectorAll('[data-section]');
+    const navLinks = document.querySelectorAll('.nav-link, .mobile-link');
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '-20% 0px -50% 0px',
+        threshold: 0.1
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetKey = entry.target.getAttribute('data-section');
+                
+                navLinks.forEach(link => {
+                    const navKey = link.getAttribute('data-nav');
+                    if (navKey === targetKey) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+        });
+    }, observerOptions);
+
+    sections.forEach(sec => sectionObserver.observe(sec));
+
+    // --- Three.js Dynamic Space Canvas (Earth Model) ---
+    const canvas = document.getElementById('space-canvas');
+    const scene = new THREE.Scene();
+
+    const camera = new THREE.PerspectiveCamera(
+        45,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+    );
+    camera.position.z = 3.2;
+
+    const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        antialias: true,
+        alpha: true
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const textureLoader = new THREE.TextureLoader();
+
+    // Earth Textures
+    const earthMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg');
+    const bumpMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-topology.png');
+    const specMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-water.png');
+    const cloudMap = textureLoader.load('https://unpkg.com/three-globe/example/img/earth-clouds.png');
+
+    const earthGroup = new THREE.Group();
+    scene.add(earthGroup);
+
+    // 1. Earth Sphere
+    const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
+    const earthMaterial = new THREE.MeshPhongMaterial({
+        map: earthMap,
+        bumpMap: bumpMap,
+        bumpScale: 0.05,
+        specularMap: specMap,
+        specular: new THREE.Color(0x333333),
+        shininess: 15
+    });
+    const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
+    earthGroup.add(earthMesh);
+
+    // 2. Cloud Layer
+    const cloudGeometry = new THREE.SphereGeometry(1.02, 64, 64);
+    const cloudMaterial = new THREE.MeshStandardMaterial({
+        map: cloudMap,
+        transparent: true,
+        opacity: 0.4,
+        blending: THREE.AdditiveBlending
+    });
+    const cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
+    earthGroup.add(cloudMesh);
+
+    // 3. Atmosphere Glow
+    const atmosphereGeometry = new THREE.SphereGeometry(1.18, 64, 64);
+    const atmosphereMaterial = new THREE.ShaderMaterial({
+        vertexShader: `
+            varying vec3 vNormal;
+            void main() {
+                vNormal = normalize(normalMatrix * normal);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            varying vec3 vNormal;
+            void main() {
+                float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 2.0);
+                gl_FragColor = vec4(0.22, 0.74, 0.97, 1.0) * intensity;
+            }
+        `,
+        blending: THREE.AdditiveBlending,
+        side: THREE.BackSide,
+        transparent: true
+    });
+    const atmosphereMesh = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+    earthGroup.add(atmosphereMesh);
+
+    // 4. Starfield
+    const STAR_COUNT = 300;
+    const starGeometry = new THREE.BufferGeometry();
+    const starPositions = new Float32Array(STAR_COUNT * 3);
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+        const radius = 6 + Math.random() * 14;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+
+        starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+        starPositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+        starPositions[i * 3 + 2] = radius * Math.cos(phi);
+    }
+
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starMaterial = new THREE.PointsMaterial({
+        color: 0xffffff,
+        size: 0.05,
+        transparent: true,
+        opacity: 0.85
+    });
+    const starField = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starField);
+
+    // Lighting
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    sunLight.position.set(5, 3, 5);
+    scene.add(sunLight);
+    scene.add(new THREE.AmbientLight(0x111827, 0.2));
+
+    function animateSpace() {
+        requestAnimationFrame(animateSpace);
+        earthMesh.rotation.y += 0.0015;
+        cloudMesh.rotation.y += 0.0019;
+        starField.rotation.y += 0.0001;
+        renderer.render(scene, camera);
+    }
+    animateSpace();
+
+    // Preserve Earth Scroll Logic Before Projects
+    const projectsSection = document.getElementById('projects');
+
+    function updateSceneOnScroll() {
+        if (!projectsSection) return;
+
+        const projectsRect = projectsSection.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        if (projectsRect.top < windowHeight) {
+            const progress = (windowHeight - projectsRect.top) / windowHeight;
+            earthGroup.position.y = progress * 3.5;
+            earthGroup.position.z = -progress * 2.0;
+            canvas.style.opacity = '0';
+        } else {
+            earthGroup.position.y = 0;
+            earthGroup.position.z = 0;
+            canvas.style.opacity = '1';
         }
     }
-);
-nodeOverlay.appendChild(
-    container
-);
-}
-/* ============================================================
-NODE POSITION UPDATE
-============================================================ */
-function updateNodePositions() {
-const rect =
-    svg.getBoundingClientRect();
-const scale =
-    Math.min(
-        rect.width / SVG_WIDTH,
-        rect.height / SVG_HEIGHT
-    );
-const renderedWidth =
-    SVG_WIDTH * scale;
-const renderedHeight =
-    SVG_HEIGHT * scale;
-const offsetX =
-    (rect.width - renderedWidth) / 2;
-const offsetY =
-    (rect.height - renderedHeight) / 2;
-Object.entries(
-    nodes
-).forEach(
-    ([nodeName, node]) => {
-        const element =
-            nodeOverlay.querySelector(
-                `[data-node="${nodeName}"]`
-            );
-        if (!element) {
-            return;
+
+    window.addEventListener('scroll', updateSceneOnScroll);
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // --- Three.js 3D Open Grimoire Book ---
+    const bookContainer = document.getElementById('3d-book-canvas');
+    if (bookContainer) {
+        const bookScene = new THREE.Scene();
+        const bookCamera = new THREE.PerspectiveCamera(40, bookContainer.clientWidth / bookContainer.clientHeight, 0.1, 100);
+        bookCamera.position.set(0, 0, 7.5);
+
+        const bookRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        bookRenderer.setSize(bookContainer.clientWidth, bookContainer.clientHeight);
+        bookRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        bookContainer.appendChild(bookRenderer.domElement);
+
+        const bookGroup = new THREE.Group();
+        bookScene.add(bookGroup);
+
+        // Warm Vintage Lighting
+        const bookLight = new THREE.PointLight(0xffe6b3, 2.5, 20);
+        bookLight.position.set(0, 3, 5);
+        bookScene.add(bookLight);
+
+        const bookAmbient = new THREE.AmbientLight(0x3a2517, 1.8);
+        bookScene.add(bookAmbient);
+
+        // 3D Curved Open Pages Geometry
+        function createOpenPageGeometry(isLeft) {
+            const geom = new THREE.PlaneGeometry(2.4, 3.4, 32, 32);
+            const pos = geom.attributes.position;
+            for (let i = 0; i < pos.count; i++) {
+                let x = pos.getX(i);
+                // Curve pages slightly upward toward spine and downward toward edges
+                let curve = Math.sin((x + (isLeft ? 1.2 : -1.2)) * 0.8) * 0.18;
+                pos.setZ(i, curve);
+            }
+            geom.computeVertexNormals();
+            return geom;
         }
-        const x =
-            offsetX +
-            node.x * scale;
-        const y =
-            offsetY +
-            node.y * scale;
-        element.style.left =
-            `${x}px`;
-        element.style.top =
-            `${y}px`;
-        element.style.transform =
-            `translate(-50%, -50%) scale(${scale})`;
+
+        const leatherMat = new THREE.MeshStandardMaterial({ color: 0x1e120a, roughness: 0.8 });
+        const coverGeom = new THREE.BoxGeometry(5.2, 3.6, 0.1);
+        const coverMesh = new THREE.Mesh(coverGeom, leatherMat);
+        coverMesh.position.z = -0.12;
+        bookGroup.add(coverMesh);
+
+        // Spine Center
+        const spineGeom = new THREE.CylinderGeometry(0.12, 0.12, 3.6, 16);
+        const spineMesh = new THREE.Mesh(spineGeom, leatherMat);
+        spineMesh.rotation.x = Math.PI / 2;
+        spineMesh.position.z = -0.05;
+        bookGroup.add(spineMesh);
+
+        // Add 3D open book subtle tilt
+        bookGroup.rotation.x = 0.25;
+
+        // Interactive Mouse Parallax Tilt
+        let targetRotY = 0;
+        let targetRotX = 0.25;
+
+        window.addEventListener('mousemove', (e) => {
+            const rect = bookContainer.getBoundingClientRect();
+            if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                const mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+                const mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+                targetRotY = mouseX * 0.35;
+                targetRotX = 0.25 + mouseY * 0.2;
+            }
+        });
+
+        function animateBook() {
+            requestAnimationFrame(animateBook);
+            bookGroup.rotation.y += (targetRotY - bookGroup.rotation.y) * 0.05;
+            bookGroup.rotation.x += (targetRotX - bookGroup.rotation.x) * 0.05;
+            bookRenderer.render(bookScene, bookCamera);
+        }
+        animateBook();
+
+        window.addEventListener('resize', () => {
+            if (!bookContainer) return;
+            bookCamera.aspect = bookContainer.clientWidth / bookContainer.clientHeight;
+            bookCamera.updateProjectionMatrix();
+            bookRenderer.setSize(bookContainer.clientWidth, bookContainer.clientHeight);
+        });
     }
-);
-}
-/* ============================================================
-TRACE HIGHLIGHT
-============================================================ */
-function highlightTrace(
-nodeName
-) {
-const trace =
-    pcbTraces.querySelector(
-        `.pcb-trace[data-node="${nodeName}"]`
-    );
-if (!trace) {
-    return;
-}
-trace.classList.add(
-    "hovered"
-);
-}
-/* ============================================================
-CLEAR TRACE HIGHLIGHT
-============================================================ */
-function clearTraceHighlight(
-nodeName
-) {
-const trace =
-    pcbTraces.querySelector(
-        `.pcb-trace[data-node="${nodeName}"]`
-    );
-if (!trace) {
-    return;
-}
-trace.classList.remove(
-    "hovered"
-);
-}
-/* ============================================================
-ACTIVATE NODE
-============================================================ */
-function activateNode(
-nodeName
-) {
-document
-    .querySelectorAll(
-        ".html-node"
-    )
-    .forEach(
-        element => {
-            element.classList.remove(
-                "active"
-            );
-        }
-    );
-const node =
-    nodeOverlay.querySelector(
-        `[data-node="${nodeName}"]`
-    );
-if (node) {
-    node.classList.add(
-        "active"
-    );
-}
-controlCore.classList.remove(
-    "core-selected"
-);
-}
-/* ============================================================
-CORE
-============================================================ */
-function createCore() {
-const group =
-    createSVGElement(
-        "g",
-        {
-            class: "clickable-core"
-        }
-    );
-const outer =
-    createSVGElement(
-        "polygon",
-        {
-            points: `
-                450,330
-                554,390
-                554,510
-                450,570
-                346,510
-                346,390
-            `,
-            class: "core-hex"
-        }
-    );
-const inner =
-    createSVGElement(
-        "polygon",
-        {
-            points: `
-                450,345
-                541,397
-                541,503
-                450,555
-                359,503
-                359,397
-            `,
-            class: "core-inner-hex"
-        }
-    );
-const status =
-    createSVGElement(
-        "text",
-        {
-            x: 450,
-            y: 425,
-            class: "core-status"
-        }
-    );
-status.textContent =
-    "ABOUT";
-const name =
-    createSVGElement(
-        "text",
-        {
-            x: 450,
-            y: 475,
-            class: "core-name"
-        }
-    );
-name.textContent =
-    "Mahasin";
-const divider =
-    createSVGElement(
-        "line",
-        {
-            x1: 385,
-            y1: 445,
-            x2: 515,
-            y2: 445,
-            class: "core-divider"
-        }
-    );
-const description =
-    createSVGElement(
-        "text",
-        {
-            x: 450,
-            y: 523,
-            class: "core-description"
-        }
-    );
-description.textContent =
-    "Portfolio";
-group.appendChild(
-    outer
-);
-group.appendChild(
-    inner
-);
-group.appendChild(
-    status
-);
-group.appendChild(
-    name
-);
-group.appendChild(
-    divider
-);
-group.appendChild(
-    description
-);
-group.addEventListener(
-    "mouseenter",
-    () => {
-        group.classList.add(
-            "core-hover"
-        );
+
+    // Mobile Navigation Toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
     }
-);
-group.addEventListener(
-    "mouseleave",
-    () => {
-        group.classList.remove(
-            "core-hover"
-        );
+
+    // Contact Form Handler
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Owl dispatched! Signal transmitted successfully.');
+            contactForm.reset();
+        });
     }
-);
-group.addEventListener(
-    "click",
-    () => {
-        window.location.href = "about.html";
-    }
-);
-controlCore.appendChild(
-    group
-);
-}
-/* ============================================================
-BUILD
-============================================================ */
-Object.entries(
-nodes
-).forEach(
-([nodeName, data]) => {
-    createTrace(
-        nodeName,
-        data
-    );
-    createNode(
-        nodeName,
-        data
-    );
-}
-);
-createCore();
-updateNodePositions();
-/* ============================================================
-RESIZE
-============================================================ */
-window.addEventListener(
-"resize",
-updateNodePositions
-);
-if (
-"ResizeObserver" in window
-) {
-const observer =
-    new ResizeObserver(
-        updateNodePositions
-    );
-observer.observe(
-    document.getElementById(
-        "topology-world"
-    )
-);
-}
+});
