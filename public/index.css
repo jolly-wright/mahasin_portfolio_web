@@ -1,3 +1,10 @@
+/* =====================================================================
+   FLUID SCALING MODEL
+   - Everything is sized in rem (or vw-proportional units), and the root
+     font-size itself scales with the screen width. Result: same shapes,
+     same proportions, scaled for every device.
+   ===================================================================== */
+
 /* --- Root Variables --- */
 :root {
     --bg-dark: #030712;
@@ -7,7 +14,15 @@
     --accent: #818cf8;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-    --header-height: 70px;
+    --header-height: 4.375rem; /* 70px at 16px root */
+
+    /* Proportional unit for cloud shapes: 1 unit = 1px on a 1440px-wide screen */
+    --s: calc(100vw / 1440);
+
+    /* Dynamic tech-book logo sizing (overridden per device below) */
+    --logo-size: clamp(2.6rem, 4.6vw, 4.2rem);
+    --logo-label: clamp(0.72rem, 1.05vw, 0.95rem);
+    --logo-row-gap: clamp(1rem, 2.6vw, 2.8rem);
 
     /* Constellation & Starchart Palette */
     --navy-ink: #050a18;
@@ -38,16 +53,26 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: var(--header-height);
     font-family: 'Outfit', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-main);
     overflow-x: hidden;
+    /* Laptop / desktop: ~16px at 1440px wide, scales up and down smoothly */
+    font-size: clamp(14px, 8px + 0.55vw, 20px);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
     position: relative;
     width: 100%;
     min-height: 100vh;
+    overflow-x: clip;
+}
+
+img {
+    max-width: 100%;
 }
 
 /* --- Space WebGL Canvas --- */
@@ -55,8 +80,9 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
+    width: 100%;
     height: 100vh;
+    height: 100lvh; /* stable height on mobile (does not jump with the URL bar) */
     z-index: 0;
     pointer-events: none;
     transition: opacity 0.5s ease-out;
@@ -66,6 +92,7 @@ body {
 main {
     position: relative;
     z-index: 1;
+    overflow-x: clip;
 }
 
 /* --- Header Navigation --- */
@@ -77,6 +104,7 @@ main {
     height: var(--header-height);
     background: rgba(3, 7, 18, 0.85);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--card-border);
     display: flex;
     justify-content: space-between;
@@ -105,6 +133,7 @@ main {
     text-decoration: none;
     font-weight: 500;
     font-size: 0.95rem;
+    white-space: nowrap;
     transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
@@ -120,6 +149,7 @@ main {
     color: var(--text-main);
     font-size: 1.5rem;
     cursor: pointer;
+    padding: 0.4rem;
 }
 
 .mobile-nav {
@@ -128,8 +158,12 @@ main {
     top: var(--header-height);
     left: 0;
     width: 100%;
+    max-height: calc(100vh - var(--header-height));
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
     background: rgba(3, 7, 18, 0.95);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--card-border);
     flex-direction: column;
     padding: 1.5rem 2rem;
@@ -152,6 +186,7 @@ main {
 /* --- Hero Section --- */
 .hero-section {
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -168,16 +203,20 @@ main {
     gap: 3rem;
 }
 
+.hero-col { min-width: 0; }
+
 .hero-name {
     font-size: 3.2rem;
     line-height: 1.1;
     margin: 1.2rem 0;
     font-weight: 700;
+    overflow-wrap: break-word;
 }
 
 .highlight {
     background: linear-gradient(90deg, #38bdf8, #818cf8);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -200,17 +239,18 @@ main {
     font-size: 0.85rem;
 }
 
-.hero-actions { display: flex; gap: 1rem; }
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 
 .hero-earth-spacer {
     height: 100%;
-    min-height: 400px;
+    min-height: 25rem; /* 400px at 16px root */
     pointer-events: none;
 }
 
 .profile-wrapper {
     background: rgba(15, 23, 42, 0.5);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--card-border);
     border-radius: 20px;
     padding: 1.5rem;
@@ -231,8 +271,9 @@ main {
 
 /* --- Fullscreen Native Web Impacts --- */
 .fullscreen-impact-page {
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -289,6 +330,9 @@ main {
     align-items: center;
 }
 
+.impact-description,
+.impact-visual-grid { min-width: 0; }
+
 .impact-description p {
     font-size: 1.2rem;
     line-height: 1.8;
@@ -308,7 +352,7 @@ main {
 
 .full-media-frame {
     width: 100%;
-    min-height: 420px;
+    min-height: clamp(13rem, 29.2vw, 26.25rem); /* 420px at 1440px wide */
     aspect-ratio: 16 / 9;
     border-radius: 18px;
     overflow: hidden;
@@ -332,18 +376,17 @@ main {
 
 /* --- Celestial Starchart Section with Seamless Section Clouds --- */
 .vertical-projects-section {
-    width: 100vw;
+    width: 100%;
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: calc(var(--header-height) + 12rem) 4rem 14rem 4rem; /* INCREASED TOP & BOTTOM PADDING */
+    padding: calc(var(--header-height) + 12rem) 4rem 14rem 4rem;
     position: relative;
     z-index: 2;
     background-color: var(--navy-ink);
-    
-    background-color: var(--navy-ink);
-    background-image: 
+
+    background-image:
         radial-gradient(2px 2px at 15% 25%, #ffffff 100%, transparent),
         radial-gradient(2px 2px at 85% 35%, rgba(255,255,255,0.85) 100%, transparent),
         radial-gradient(1.5px 1.5px at 30% 75%, #ffd700 100%, transparent),
@@ -385,17 +428,20 @@ main {
     background: radial-gradient(circle, #24150b 20%, transparent 80%);
 }
 
-.puff-0 { width: 600px; height: 300px; left: -10%; opacity: 0.95; filter: blur(30px); }
-.puff-1 { width: 520px; height: 260px; left: 2%; opacity: 0.90; filter: blur(25px); }
-.puff-2 { width: 650px; height: 320px; left: 14%; opacity: 0.95; filter: blur(35px); }
-.puff-3 { width: 550px; height: 280px; left: 26%; opacity: 0.92; filter: blur(28px); }
-.puff-4 { width: 700px; height: 340px; left: 38%; opacity: 0.96; filter: blur(38px); }
-.puff-5 { width: 580px; height: 290px; left: 50%; opacity: 0.90; filter: blur(30px); }
-.puff-6 { width: 680px; height: 330px; left: 62%; opacity: 0.95; filter: blur(36px); }
-.puff-7 { width: 540px; height: 270px; left: 74%; opacity: 0.88; filter: blur(26px); }
-.puff-8 { width: 620px; height: 310px; left: 86%; opacity: 0.94; filter: blur(32px); }
-.puff-9 { width: 560px; height: 280px; left: 98%; opacity: 0.92; filter: blur(28px); }
-.puff-10 { width: 650px; height: 320px; left: 108%; opacity: 0.95; filter: blur(35px); }
+/* Cloud shapes keep their exact proportions on every screen:
+   sizes scale with the viewport width (var(--s) = 1px @ 1440px wide),
+   with a floor so they never vanish on phones. */
+.puff-0  { width: max(calc(var(--s) * 600), 14rem); height: max(calc(var(--s) * 300), 7rem);   left: -10%; opacity: 0.95; filter: blur(max(calc(var(--s) * 30), 12px)); }
+.puff-1  { width: max(calc(var(--s) * 520), 12rem); height: max(calc(var(--s) * 260), 6rem);   left: 2%;   opacity: 0.90; filter: blur(max(calc(var(--s) * 25), 10px)); }
+.puff-2  { width: max(calc(var(--s) * 650), 15rem); height: max(calc(var(--s) * 320), 7.5rem); left: 14%;  opacity: 0.95; filter: blur(max(calc(var(--s) * 35), 14px)); }
+.puff-3  { width: max(calc(var(--s) * 550), 12.5rem); height: max(calc(var(--s) * 280), 6.5rem); left: 26%; opacity: 0.92; filter: blur(max(calc(var(--s) * 28), 11px)); }
+.puff-4  { width: max(calc(var(--s) * 700), 16rem); height: max(calc(var(--s) * 340), 8rem);   left: 38%;  opacity: 0.96; filter: blur(max(calc(var(--s) * 38), 15px)); }
+.puff-5  { width: max(calc(var(--s) * 580), 13.5rem); height: max(calc(var(--s) * 290), 6.75rem); left: 50%; opacity: 0.90; filter: blur(max(calc(var(--s) * 30), 12px)); }
+.puff-6  { width: max(calc(var(--s) * 680), 15.5rem); height: max(calc(var(--s) * 330), 7.75rem); left: 62%; opacity: 0.95; filter: blur(max(calc(var(--s) * 36), 14px)); }
+.puff-7  { width: max(calc(var(--s) * 540), 12.5rem); height: max(calc(var(--s) * 270), 6.25rem); left: 74%; opacity: 0.88; filter: blur(max(calc(var(--s) * 26), 10px)); }
+.puff-8  { width: max(calc(var(--s) * 620), 14.5rem); height: max(calc(var(--s) * 310), 7.25rem); left: 86%; opacity: 0.94; filter: blur(max(calc(var(--s) * 32), 13px)); }
+.puff-9  { width: max(calc(var(--s) * 560), 13rem);   height: max(calc(var(--s) * 280), 6.5rem);  left: 98%;  opacity: 0.92; filter: blur(max(calc(var(--s) * 28), 11px)); }
+.puff-10 { width: max(calc(var(--s) * 650), 15rem);   height: max(calc(var(--s) * 320), 7.5rem); left: 108%; opacity: 0.95; filter: blur(max(calc(var(--s) * 35), 14px)); }
 
 /* Starchart Container */
 .vertical-projects-container {
@@ -406,8 +452,8 @@ main {
     justify-content: center;
     position: relative;
     z-index: 2;
-    margin-top: 2rem; /* ADDED SPACING CLEARANCE FROM CLOUDS */
-    margin-bottom: 4rem; /* ADDED BOTTOM MARGIN CLEARANCE */
+    margin-top: 2rem;
+    margin-bottom: 4rem;
 }
 
 .section-intro { margin-bottom: 1.5rem; }
@@ -432,17 +478,20 @@ main {
 
 .vertical-project-row {
     display: grid;
-    grid-template-columns: 60px 1fr;
+    grid-template-columns: 3.75rem 1fr; /* 60px at 16px root */
     align-items: center;
     gap: 1.5rem;
     padding: 1.25rem 1.8rem;
     background: rgba(8, 14, 28, 0.88);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(212, 175, 55, 0.28);
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.project-info { min-width: 0; }
 
 .vertical-project-row:hover {
     transform: translateY(-2px);
@@ -461,6 +510,7 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     margin-bottom: 0.4rem;
 }
 
@@ -498,7 +548,7 @@ main {
 /* --- VINTAGE OPEN PARCHMENT BOOK SECTION --- */
 .vintage-section {
     background-color: var(--parchment-bg);
-    background-image: 
+    background-image:
         radial-gradient(circle at 50% 50%, rgba(45, 25, 12, 0.85) 0%, transparent 90%),
         radial-gradient(#3d2415 1px, transparent 0);
     background-size: 100% 100%, 28px 28px;
@@ -522,7 +572,7 @@ main {
     padding: 22px 28px;
     background: #1c0e06;
     border-radius: 28px;
-    box-shadow: 
+    box-shadow:
         0 35px 70px rgba(0, 0, 0, 0.95),
         inset 0 0 20px rgba(0, 0, 0, 0.8);
     border: 2px solid #54331c;
@@ -535,7 +585,7 @@ main {
     inset: 6px 12px;
     background: #d4bf96;
     border-radius: 22px;
-    box-shadow: 
+    box-shadow:
         0 0 0 2px #3a2010,
         0 4px 0 #bc9c6d,
         0 8px 0 #9e7f53,
@@ -548,7 +598,7 @@ main {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: 1fr 20px 1fr;
+    grid-template-columns: minmax(0, 1fr) 1.25rem minmax(0, 1fr);
     background: linear-gradient(135deg, var(--parchment-paper-top) 0%, var(--parchment-paper-bottom) 100%);
     border-radius: 18px 45px 45px 18px;
     box-shadow: inset 0 0 60px rgba(130, 85, 45, 0.4), 0 12px 30px rgba(0, 0, 0, 0.7);
@@ -573,7 +623,7 @@ main {
 }
 
 .binding-stitch {
-    width: 14px;
+    width: 0.875rem;
     height: 3px;
     background: #1a0a03;
     border-radius: 2px;
@@ -585,8 +635,9 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 820px; /* Lengthened vertical proportion */
-    padding: 4.5rem 3.5rem;
+    min-height: clamp(30rem, 57vw, 51.25rem); /* 820px at 1440px wide, shrinks on smaller screens */
+    padding: clamp(2.5rem, 5vw, 4.5rem) 3.5rem;
+    min-width: 0;
 }
 
 .page-header {
@@ -595,7 +646,7 @@ main {
     margin-bottom: 2rem;
     display: flex;
     align-items: center;
-    min-height: 50px;
+    min-height: 3.125rem;
 }
 
 .right-header {
@@ -637,8 +688,8 @@ main {
 /* Cleaner, Spaced Logo Grid for Tall Page Layout */
 .tech-logo-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 2.8rem 1.2rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--logo-row-gap) 1.2rem;
     align-content: center;
     margin-bottom: auto;
     padding: 1rem 0;
@@ -651,6 +702,7 @@ main {
     justify-content: center;
     gap: 0.8rem;
     padding: 0.6rem;
+    min-width: 0;
     transition: transform 0.25s ease;
 }
 
@@ -659,13 +711,13 @@ main {
 }
 
 .tech-logo-item i {
-    font-size: 4.2rem;
+    font-size: var(--logo-size);
     filter: drop-shadow(1px 2px 4px rgba(43, 24, 16, 0.25));
 }
 
 .svg-tech-icon {
-    width: 4.2rem;
-    height: 4.2rem;
+    width: var(--logo-size);
+    height: var(--logo-size);
     filter: drop-shadow(1px 2px 4px rgba(43, 24, 16, 0.25));
 }
 
@@ -675,10 +727,11 @@ main {
 
 .tech-logo-item span {
     font-family: 'Outfit', sans-serif;
-    font-size: 0.95rem;
+    font-size: var(--logo-label);
     font-weight: 700;
     color: var(--ink-dark);
     text-align: center;
+    overflow-wrap: anywhere;
 }
 
 .right-footer {
@@ -688,7 +741,7 @@ main {
 }
 
 /* --- HOGWARTS OFFICIAL ACADEMIC CERTIFICATE DIPLOMA --- */
-.hp-academic-theme { 
+.hp-academic-theme {
     background-color: var(--parchment-bg);
     padding: 5rem 0 8rem 0;
 }
@@ -698,8 +751,8 @@ main {
     border: 4px solid var(--parchment-border);
     border-radius: 10px;
     padding: 1rem;
-    min-height: 750px;
-    box-shadow: 
+    min-height: 46.875rem; /* 750px at 16px root */
+    box-shadow:
         0 25px 60px rgba(0, 0, 0, 0.9),
         inset 0 0 50px rgba(130, 85, 45, 0.35);
     position: relative;
@@ -714,7 +767,7 @@ main {
     position: relative;
     text-align: center;
     background: rgba(255, 255, 255, 0.15);
-    min-height: calc(750px - 2.4rem); /* MATCHES TALL DIPLOMA HEIGHT */
+    min-height: calc(46.875rem - 2.4rem);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -763,8 +816,8 @@ main {
 }
 
 .wax-seal {
-    width: 68px;
-    height: 68px;
+    width: 4.25rem;
+    height: 4.25rem;
     background: var(--burgundy-seal);
     color: #f5e8d0;
     border-radius: 50%;
@@ -798,6 +851,8 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    flex-wrap: wrap;
+    column-gap: 1rem;
 }
 
 .academic-header h3 {
@@ -909,34 +964,141 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .social-links a { color: var(--gold-bright); font-size: 1.2rem; margin-left: 1.2rem; }
 
-/* --- Responsive Adjustments --- */
-@media (max-width: 1024px) {
-    .hero-full-layout { grid-template-columns: 1fr; text-align: center; }
-    .hero-actions { justify-content: center; }
-    .fullscreen-impact-page { padding: calc(var(--header-height) + 2rem) 2rem 3rem 2rem; }
-    .impact-body-zone { grid-template-columns: 1fr; gap: 2rem; }
-    .full-media-frame { min-height: 280px; }
-    .vertical-projects-section { padding: calc(var(--header-height) + 2rem) 2rem 2rem 2rem; min-height: auto; }
-    
-    .grimoire-real-book { grid-template-columns: 1fr; gap: 2.5rem; border-radius: 18px; }
-    .grimoire-center-binding { display: none; }
-    .grimoire-page { min-height: auto; padding: 3rem 2rem; }
-    .tech-logo-grid { grid-template-columns: repeat(3, 1fr); }
+/* =====================================================================
+   RESPONSIVE ADJUSTMENTS
+   ===================================================================== */
+
+/* Mid-size laptops: keep nav tidy as width shrinks */
+@media (max-width: 1280px) {
+    #main-header { padding: 0 2rem; }
+    .desktop-nav { gap: clamp(1rem, 1.8vw, 2rem); }
 }
 
-@media (max-width: 768px) {
-    #main-header { padding: 0 1.5rem; }
+/* Tablet & below: single-column layout (same stacking as before) */
+@media (max-width: 1024px) {
+    html { font-size: clamp(14px, 12px + 0.4vw, 16px); }
+
+    .hero-section { padding: calc(var(--header-height) + 2rem) 2.5rem 4.5rem 2.5rem; }
+    .hero-full-layout { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+    .hero-actions { justify-content: center; }
+    .hero-profile .profile-wrapper { max-width: 26rem; margin: 0 auto; }
+
+    .fullscreen-impact-page { padding: calc(var(--header-height) + 2rem) 2rem 3rem 2rem; }
+    .impact-body-zone { grid-template-columns: 1fr; gap: 2rem; }
+    .full-media-frame { min-height: clamp(11rem, 36vw, 17.5rem); }
+
+    .vertical-projects-section {
+        padding: calc(var(--header-height) + 6rem) 2rem 6rem 2rem;
+        min-height: auto;
+    }
+    .vertical-projects-container { margin-top: 1rem; margin-bottom: 2rem; }
+
+    .vintage-section { padding: 6rem 0; }
+    .hp-academic-theme { padding: 4rem 0 6rem 0; }
+
+    /* Book stays open as a two-page spread on tablets (same shape, scaled) */
+    .grimoire-real-book { border-radius: 18px 36px 36px 18px; }
+    :root {
+        --logo-size: clamp(2.4rem, 5.6vw, 3.6rem);
+        --logo-label: clamp(0.7rem, 1.7vw, 0.85rem);
+        --logo-row-gap: clamp(1rem, 3vw, 1.6rem);
+    }
+    .grimoire-page { min-height: 0; padding: clamp(2rem, 4.5vw, 2.5rem) 1.5rem; }
+    .page-heading h2 { font-size: 1.35rem; white-space: normal; margin-bottom: 1.4rem; }
+    .tech-logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--logo-row-gap) 0.5rem; }
+    .tech-logo-item { padding: 0.2rem; }
+}
+
+/* Hamburger menu takes over before the nav would overflow */
+@media (max-width: 900px) {
     .desktop-nav { display: none; }
     #menu-toggle { display: block; }
-    .section-title-large { font-size: 2.2rem; }
-    .impact-headline { font-size: 1.8rem; }
-    .vertical-project-row { grid-template-columns: 1fr; padding: 1.2rem; }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+    #main-header { padding: 0 1.25rem; }
+    .logo { font-size: 1.1rem; }
+    .mobile-nav { padding: 1.25rem 1.5rem; }
+
+    .hero-section { padding: calc(var(--header-height) + 1.5rem) 1.25rem 4.5rem 1.25rem; }
+    .hero-name { font-size: clamp(2.1rem, 10vw, 3.2rem); }
+    .intro-paragraph p { font-size: 1rem; }
+    .hero-earth-spacer { min-height: min(25rem, 88vw); }
+    .hero-profile .profile-wrapper { max-width: 21rem; }
+
+    .fullscreen-impact-page { padding: calc(var(--header-height) + 1.5rem) 1.25rem 2.5rem 1.25rem; }
+    .section-title-large { font-size: clamp(1.8rem, 8vw, 2.2rem); }
+    .impact-headline { font-size: clamp(1.45rem, 6.6vw, 1.8rem); }
+    .impact-description p { font-size: 1.05rem; line-height: 1.7; }
+    .institution-tag { font-size: 1rem; }
+    .impact-visual-grid { gap: 1rem; }
     .impact-visual-grid.triple-grid { grid-template-columns: 1fr; }
-    .tech-logo-grid { grid-template-columns: repeat(2, 1fr); }
-    .tech-logo-item i, .svg-tech-icon { font-size: 3rem; width: 3rem; height: 3rem; }
-    .cert-border-inner { padding: 2rem 1.5rem; }
+    .full-media-frame { min-height: 0; }
+
+    .vertical-projects-section { padding: calc(var(--header-height) + 5.5rem) 1.25rem 5rem 1.25rem; }
+    .section-headline { font-size: clamp(1.6rem, 7vw, 2.3rem); }
+    .vertical-project-row { grid-template-columns: 1fr; padding: 1.2rem; gap: 0.6rem; }
+    .project-title-bar h3 { font-size: 1.15rem; }
+
+    .vintage-section { padding: 4.5rem 0; }
+    .vintage-container { padding: 0 1rem; }
+    .grimoire-book-wrapper { padding: 12px 12px; border-radius: 20px; margin-top: 2.5rem; }
+    .real-book-spine-cover { inset: 4px 6px; border-radius: 16px; }
+    /* Phone: still a two-page spread, everything shrunk to fit each page */
+    .grimoire-real-book { grid-template-columns: minmax(0, 1fr) 0.6rem minmax(0, 1fr); border-radius: 12px 24px 24px 12px; }
+    :root {
+        --logo-size: clamp(1.7rem, 8vw, 2.6rem);
+        --logo-label: clamp(0.56rem, 2.1vw, 0.68rem);
+        --logo-row-gap: clamp(0.6rem, 2.6vw, 1rem);
+    }
+    .grimoire-page { min-height: 0; padding: 1.2rem 0.7rem; }
+    .page-header { margin-bottom: 0.9rem; padding-bottom: 0.5rem; min-height: 0; }
+    .hp-motto-quote { font-size: 0.68rem; line-height: 1.3; }
+    .hp-page-number { font-size: 0.95rem; letter-spacing: 1px; }
+    .page-heading h2 { white-space: normal; font-size: 0.9rem; gap: 0.35rem; margin-bottom: 0.9rem; align-items: flex-start; line-height: 1.2; }
+    .tech-logo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--logo-row-gap) 0.3rem; padding: 0.2rem 0; }
+    .tech-logo-item { padding: 0.1rem; gap: 0.3rem; }
+
+    .hp-academic-theme { padding: 3rem 0 4.5rem 0; }
+    .hogwarts-certificate { min-height: 0; padding: 0.6rem; }
+    .cert-border-inner { padding: 2rem 1.5rem; min-height: 0; gap: 0.5rem; }
+    .cert-institution { font-size: 1rem; letter-spacing: 1px; }
+    .cert-title { font-size: clamp(1.5rem, 8vw, 2.6rem); letter-spacing: 2px; margin-bottom: 1.5rem; }
+    .academic-header h3 { font-size: 1.1rem; }
+    .academic-desc { font-size: 1rem; }
+    .hp-divider { margin: 1.2rem 0; }
+    .cert-signature-block { margin-top: 2rem; }
+    .sig-line { width: 90%; }
+
+    .vintage-form-container { padding: 1.5rem 1.2rem; }
+    .contact-vintage .hp-title { font-size: clamp(1.4rem, 6.4vw, 2rem); text-align: center; }
+
+    footer { padding: 1.5rem 1.25rem; }
+    .footer-content { flex-direction: column; text-align: center; gap: 0.8rem; }
+    .social-links a { margin: 0 0.6rem; }
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+    .badge { font-size: 0.75rem; }
+    .btn { padding: 0.7rem 1.2rem; }
+    :root { --logo-size: clamp(1.6rem, 7.5vw, 2.1rem); --logo-label: 0.56rem; }
+    .grimoire-page { padding: 1rem 0.55rem; }
+}
+
+/* Landscape phones / very short screens: don't force full-viewport heights */
+@media (max-height: 520px) and (orientation: landscape) {
+    .hero-section, .fullscreen-impact-page { min-height: auto; }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .scroll-indicator { animation: none; }
 }

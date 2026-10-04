@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const targetKey = entry.target.getAttribute('data-section');
-                
+
                 navLinks.forEach(link => {
                     const navKey = link.getAttribute('data-nav');
                     if (navKey === targetKey) {
@@ -33,9 +33,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('space-canvas');
     const scene = new THREE.Scene();
 
+    // Canvas is sized by CSS (100% x 100lvh); the renderer follows its real size.
+    let viewW = canvas.clientWidth || window.innerWidth;
+    let viewH = canvas.clientHeight || window.innerHeight;
+
     const camera = new THREE.PerspectiveCamera(
         45,
-        window.innerWidth / window.innerHeight,
+        viewW / viewH,
         0.1,
         1000
     );
@@ -46,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         antialias: true,
         alpha: true
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(viewW, viewH, false);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const textureLoader = new THREE.TextureLoader();
@@ -139,43 +143,70 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.add(sunLight);
     scene.add(new THREE.AmbientLight(0x111827, 0.2));
 
-    function animateSpace() {
-        requestAnimationFrame(animateSpace);
-        earthMesh.rotation.y += 0.0015;
-        cloudMesh.rotation.y += 0.0019;
-        starField.rotation.y += 0.0001;
-        renderer.render(scene, camera);
-    }
-    animateSpace();
-
-    // Preserve Earth Scroll Logic Before Projects
+    // --- Earth Background Placement (same behavior on every device) ---
+    // The Earth is a fixed, centered background that stays in place while you scroll,
+    // then lifts away as the Projects section arrives. It is only scaled down on
+    // tall/narrow screens (phones, portrait tablets) so it always fits the width.
     const projectsSection = document.getElementById('projects');
 
+    // Total visual diameter of the earth group in world units (atmosphere radius 1.18)
+    const EARTH_EXTENT = 2.36;
+
+    let canvasHidden = false;
+
     function updateSceneOnScroll() {
+        const windowHeight = window.innerHeight;
+        const aspect = viewW / viewH;
+
+        earthGroup.visible = true;
+        earthGroup.position.x = 0;
+        const fit = Math.min(1, (aspect * 2.65 * 0.95) / EARTH_EXTENT);
+        earthGroup.scale.setScalar(fit);
+
         if (!projectsSection) return;
 
         const projectsRect = projectsSection.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
 
         if (projectsRect.top < windowHeight) {
             const progress = (windowHeight - projectsRect.top) / windowHeight;
             earthGroup.position.y = progress * 3.5;
             earthGroup.position.z = -progress * 2.0;
             canvas.style.opacity = '0';
+            canvasHidden = true;
         } else {
             earthGroup.position.y = 0;
             earthGroup.position.z = 0;
             canvas.style.opacity = '1';
+            canvasHidden = false;
         }
     }
 
-    window.addEventListener('scroll', updateSceneOnScroll);
+    function animateSpace() {
+        requestAnimationFrame(animateSpace);
+        earthMesh.rotation.y += 0.0015;
+        cloudMesh.rotation.y += 0.0019;
+        starField.rotation.y += 0.0001;
+        updateSceneOnScroll();
+        // Skip GPU work once the canvas has faded out behind the projects section
+        if (canvasHidden && canvas.style.opacity === '0') return;
+        renderer.render(scene, camera);
+    }
+    animateSpace();
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
+    function handleResize() {
+        const w = canvas.clientWidth || window.innerWidth;
+        const h = canvas.clientHeight || window.innerHeight;
+        if (w === viewW && h === viewH) return;
+        viewW = w;
+        viewH = h;
+        camera.aspect = viewW / viewH;
         camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+        renderer.setSize(viewW, viewH, false);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    }
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', () => setTimeout(handleResize, 250));
 
     // --- Three.js 3D Open Grimoire Book ---
     const bookContainer = document.getElementById('3d-book-canvas');
@@ -263,9 +294,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile Navigation Toggle
     const menuToggle = document.getElementById('menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
-    if (menuToggle) {
+    if (menuToggle && mobileMenu) {
+        menuToggle.setAttribute('aria-expanded', 'false');
+
         menuToggle.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
+            const isOpen = mobileMenu.classList.toggle('open');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        // Close the drawer after choosing a section
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+
+        // Close the drawer if the screen grows past the hamburger breakpoint
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) {
+                mobileMenu.classList.remove('open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
         });
     }
 

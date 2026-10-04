@@ -1,0 +1,29 @@
+# Md. Mahasin Al Muhi
+
+> Md. Mahasin Al Muhi (also known as Mahasin, Muhi, Al Muhi, Mahasin Al Muhi) is a student engineer and researcher from Dhaka, Bangladesh, and co-founder of Team Nokkhotropoth. He builds autonomous systems including UAVs, planetary rovers and satellite control frameworks.
+
+## About
+- Name: Md. Mahasin Al Muhi (alternate: Mahasin Al Muhi, Mahasin, Muhi, Al Muhi)
+- Role: Co-Founder, Team Nokkhotropoth
+- Focus: Control systems, aerospace, UAVs, autonomous robotics, embedded systems
+- Education: Notre Dame College, Dhaka (HSC, NDC '27 batch); St. Joseph Higher Secondary School (SSC '25 batch, GPA 5.00/5.00)
+- Organization: Organizer at Notre Dame Science Club (NDSC)
+
+## Team Nokkhotropoth
+Team Nokkhotropoth is an R&D collective dedicated to producing autonomous systems while educating the next wave of engineers. Co-founded by Md. Mahasin Al Muhi. The team mentors students in UAV design, aerodynamics and flight control integration.
+- Website: https://nokkhotropoth.pages.dev
+
+## Key achievements
+- Developed a dead-reckoning localization framework for UAVs in GPS-denied environments: 5th Place at the 47th National Science Week.
+- Led the technical architecture of Agricure, a cooperative UAV and ground-rover agricultural system using a custom CNN for plant disease detection, presented at the National Round of "Startup, Science Project & Idea Showcasing 2026".
+- Delivered the keynote address at the Dhaka District Round of the 47th National Science Week Festival at Notre Dame College, Dhaka.
+- Helped organize the Notre Dame Annual Science Festival 2025 & 35th GKC (18 project teams from Notre Dame College, 65+ science projects guided).
+- Built a perpetual zero-cost web platform for Notre Dame Science Club: https://ndscbd.net
+
+## Projects
+- Agricure Autonomous Ecosystem
+- GPS-Denied UAV Localization Framework
+- NDSC Perpetual Web Platform
+
+## Website
+- Portfolio: https://YOUR-DOMAIN.com/
